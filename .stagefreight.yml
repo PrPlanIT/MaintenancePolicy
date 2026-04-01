@@ -1,9 +1,15 @@
+version: 1
+
+lifecycle:
+  mode: governance
+
 governance:
   skeleton:
     source:
       repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
       path: ".gitlab-ci.yml"
       ref: "main"
+      allow_floating: true
 
   clusters:
     - id: docker-services
@@ -56,7 +62,6 @@ governance:
           preset: "preset/release.yml"
         lint:
           preset: "preset/lint-full.yml"
-        # binary-targets merged via local .stagefreight.yml (build IDs are repo-specific)
 
     - id: docker-component
       targets:
@@ -80,7 +85,6 @@ governance:
           preset: "preset/release.yml"
         lint:
           preset: "preset/lint-full.yml"
-        # gitlab-component targets handled via local .stagefreight.yml
 
     - id: gitops-repos
       targets:
