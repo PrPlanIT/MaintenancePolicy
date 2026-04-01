@@ -1,0 +1,109 @@
+governance:
+  skeleton:
+    source:
+      repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+      path: "integrations/gitlab-ci.yml"
+      ref: "main"
+
+  clusters:
+    - id: docker-services
+      targets:
+        repos:
+          - "PrPlanIT/fairer-pages"
+          - "PrPlanIT/oh-CI"
+          - "PrPlanIT/HomeLabHD/apt-cacher-ng"
+          - "PrPlanIT/HomeLabHD/prometheus-eaton-ups-exporter"
+          - "PrPlanIT/HomeLabHD/sm-lickitung-gen"
+      stagefreight:
+        version: 1
+        targets:
+          preset: "preset/docker-targets.yml"
+        badges:
+          preset: "preset/docker-badges.yml"
+        security:
+          preset: "preset/security.yml"
+        dependency:
+          preset: "preset/dependency.yml"
+        docs:
+          preset: "preset/docs.yml"
+        commit:
+          preset: "preset/commit.yml"
+        release:
+          preset: "preset/release.yml"
+        lint:
+          preset: "preset/lint-full.yml"
+
+    - id: docker-binary
+      targets:
+        repos:
+          - "PrPlanIT/StageFreight"
+          - "PrPlanIT/HASteward"
+      stagefreight:
+        version: 1
+        targets:
+          preset: "preset/docker-targets.yml"
+        badges:
+          preset: "preset/docker-badges.yml"
+        security:
+          preset: "preset/security.yml"
+        dependency:
+          preset: "preset/dependency.yml"
+        docs:
+          preset: "preset/docs.yml"
+        commit:
+          preset: "preset/commit.yml"
+        release:
+          preset: "preset/release.yml"
+        lint:
+          preset: "preset/lint-full.yml"
+        # binary-targets merged via local .stagefreight.yml (build IDs are repo-specific)
+
+    - id: docker-component
+      targets:
+        repos:
+          - "PrPlanIT/HomeLabHD/ansible"
+      stagefreight:
+        version: 1
+        targets:
+          preset: "preset/docker-targets.yml"
+        badges:
+          preset: "preset/docker-badges.yml"
+        security:
+          preset: "preset/security.yml"
+        dependency:
+          preset: "preset/dependency.yml"
+        docs:
+          preset: "preset/docs.yml"
+        commit:
+          preset: "preset/commit.yml"
+        release:
+          preset: "preset/release.yml"
+        lint:
+          preset: "preset/lint-full.yml"
+        # gitlab-component targets handled via local .stagefreight.yml
+
+    - id: gitops-repos
+      targets:
+        repos:
+          - "SoFMeRight/dungeon"
+      stagefreight:
+        version: 1
+        docs:
+          preset: "preset/docs.yml"
+        commit:
+          preset: "preset/commit.yml"
+        lint:
+          preset: "preset/lint-full.yml"
+
+    - id: binary-apps
+      targets:
+        repos:
+          - "PrPlanIT/DisplayWizard"
+      stagefreight:
+        version: 1
+        targets:
+          preset: "preset/binary-targets.yml"
+        security:
+          preset: "preset/security.yml"
+        lint:
+          preset: "preset/lint-full.yml"
