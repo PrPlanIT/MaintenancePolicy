@@ -14,10 +14,15 @@ This repo IS a StageFreight-managed repo. Its `.stagefreight.yml` declares gover
 - `precommit/` — pre-commit hook configs (future)
 - `renovate/` — Renovate bot configs (future)
 
-## Two-file model
+## Governed files
 
-Each governed repo gets:
-- `.stagefreight/stagefreight-managed.yml` — machine-owned, generated from this policy repo
-- `.stagefreight.yml` — human-authored, local intent and overrides (never touched by reconciler)
+Governance distributes files to satellite repos. Which files are governed and how drift is handled is policy-declared per file:
 
-Local always wins. Detaching from governance is always possible.
+- **governed + replace** — machine-owned, drift is overwritten (e.g., `.stagefreight/stagefreight-managed.yml`, `.gitlab-ci.yml`)
+- **governed + warn** — governance-seeded, drift emits warning but still replaces
+- **local-friendly + warn** — seeded as starter, local edits tolerated
+- **local-friendly + ignore** — seeded once, never touched again
+
+`.stagefreight.yml` may itself be governance-seeded or governance-enforced when policy declares it governed. Governance ownership is policy-declared per file, not hardcoded by filename.
+
+Detaching from governance is always possible.
