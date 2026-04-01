@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git commit:*)"
+    ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
+}
