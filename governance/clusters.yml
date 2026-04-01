@@ -2,7 +2,7 @@ governance:
   skeleton:
     source:
       repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-      path: "integrations/gitlab-ci.yml"
+      path: ".gitlab-ci.yml"
       ref: "main"
 
   clusters:
