@@ -7,7 +7,7 @@ governance:
   skeleton:
     source:
       repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-      path: "skeletons/gitlab/standard.yml"
+      path: "integrations/gitlab/standard.gitlab-ci.yml"
       ref: "main"
       allow_floating: true
 
@@ -89,7 +89,7 @@ governance:
     - id: gitops-repos
       skeleton:
         source:
-          path: "skeletons/gitlab/lightweight.yml"
+          path: "integrations/gitlab/lightweight.gitlab-ci.yml"
       targets:
         repos:
           - "SoFMeRight/dungeon"
