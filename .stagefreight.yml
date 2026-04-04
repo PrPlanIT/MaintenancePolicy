@@ -4,13 +4,6 @@ lifecycle:
   mode: governance
 
 governance:
-  skeleton:
-    source:
-      repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-      path: "integrations/gitlab/standard.gitlab-ci.yml"
-      ref: "main"
-      allow_floating: true
-
   clusters:
     - id: docker-services
       targets:
@@ -22,6 +15,19 @@ governance:
           - "PrPlanIT/HomeLabHD/sm-lickitung-gen"
       stagefreight:
         version: 1
+        assets:
+          - id: ci-skeleton
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+              ref: "main"
+              path: "integrations/gitlab/standard.gitlab-ci.yml"
+            target: ".gitlab-ci.yml"
+          - id: claude-settings
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+              ref: "main"
+              path: "claude-code/project-settings.json"
+            target: ".claude/settings.json"
         targets:
           preset: "preset/docker-targets.yml"
         badges:
@@ -46,6 +52,19 @@ governance:
           - "PrPlanIT/HASteward"
       stagefreight:
         version: 1
+        assets:
+          - id: ci-skeleton
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+              ref: "main"
+              path: "integrations/gitlab/standard.gitlab-ci.yml"
+            target: ".gitlab-ci.yml"
+          - id: claude-settings
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+              ref: "main"
+              path: "claude-code/project-settings.json"
+            target: ".claude/settings.json"
         targets:
           preset: "preset/docker-targets.yml"
         badges:
@@ -69,6 +88,19 @@ governance:
           - "PrPlanIT/HomeLabHD/ansible"
       stagefreight:
         version: 1
+        assets:
+          - id: ci-skeleton
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+              ref: "main"
+              path: "integrations/gitlab/standard.gitlab-ci.yml"
+            target: ".gitlab-ci.yml"
+          - id: claude-settings
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+              ref: "main"
+              path: "claude-code/project-settings.json"
+            target: ".claude/settings.json"
         targets:
           preset: "preset/docker-targets.yml"
         badges:
@@ -87,14 +119,24 @@ governance:
           preset: "preset/lint-full.yml"
 
     - id: gitops-repos
-      skeleton:
-        source:
-          path: "integrations/gitlab/lightweight.gitlab-ci.yml"
       targets:
         repos:
           - "SoFMeRight/dungeon"
       stagefreight:
         version: 1
+        assets:
+          - id: ci-skeleton
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+              ref: "main"
+              path: "integrations/gitlab/lightweight.gitlab-ci.yml"
+            target: ".gitlab-ci.yml"
+          - id: claude-settings
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+              ref: "main"
+              path: "claude-code/project-settings.json"
+            target: ".claude/settings.json"
         docs:
           preset: "preset/docs.yml"
         commit:
@@ -108,6 +150,19 @@ governance:
           - "PrPlanIT/DisplayWizard"
       stagefreight:
         version: 1
+        assets:
+          - id: ci-skeleton
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+              ref: "main"
+              path: "integrations/gitlab/standard.gitlab-ci.yml"
+            target: ".gitlab-ci.yml"
+          - id: claude-settings
+            source:
+              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+              ref: "main"
+              path: "claude-code/project-settings.json"
+            target: ".claude/settings.json"
         targets:
           preset: "preset/binary-targets.yml"
         security:
