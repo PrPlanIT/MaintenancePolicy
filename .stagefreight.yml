@@ -1,171 +1,141 @@
 version: 1
 
+sources:
+  primary:
+    url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+    default_branch: "main"
+
 lifecycle:
   mode: governance
 
+defaults:
+  # ── Shared asset declarations ──────────────────────────────────
+  standard-skeleton: &standard-skeleton
+    id: ci-skeleton
+    source:
+      repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+      ref: "main"
+      path: "integrations/gitlab/standard.gitlab-ci.yml"
+    target: ".gitlab-ci.yml"
+
+  lightweight-skeleton: &lightweight-skeleton
+    id: ci-skeleton
+    source:
+      repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+      ref: "main"
+      path: "integrations/gitlab/lightweight.gitlab-ci.yml"
+    target: ".gitlab-ci.yml"
+
+  claude-settings: &claude-settings
+    id: claude-settings
+    source:
+      repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+      ref: "main"
+      path: "claude-code/project-settings.json"
+    target: ".claude/settings.json"
+
+  # ── Shared preset blocks ───────────────────────────────────────
+  full-docker-presets: &full-docker-presets
+    targets:
+      preset: "preset/docker-targets.yml"
+    badges:
+      preset: "preset/docker-badges.yml"
+    security:
+      preset: "preset/security.yml"
+    dependency:
+      preset: "preset/dependency.yml"
+    docs:
+      preset: "preset/docs.yml"
+    commit:
+      preset: "preset/commit.yml"
+    release:
+      preset: "preset/release.yml"
+    lint:
+      preset: "preset/lint-full.yml"
+
 governance:
   clusters:
-    - id: docker-services
+    # ── PrPlanIT: Binary apps ────────────────────────────────────
+    - id: prplanit-displaywizard
       targets:
         repos:
-          - "PrPlanIT/fairer-pages"
-          - "PrPlanIT/oh-CI"
-          - "PrPlanIT/HomeLabHD/apt-cacher-ng"
-          - "PrPlanIT/HomeLabHD/prometheus-eaton-ups-exporter"
-          - "PrPlanIT/HomeLabHD/sm-lickitung-gen"
+          - "PrPlanIT/DisplayWizard"
       stagefreight:
         version: 1
+        vars:
+          preset: "preset/vars-prplanit.yml"
         assets:
-          - id: ci-skeleton
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-              ref: "main"
-              path: "integrations/gitlab/standard.gitlab-ci.yml"
-            target: ".gitlab-ci.yml"
-          - id: claude-settings
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
-              ref: "main"
-              path: "claude-code/project-settings.json"
-            target: ".claude/settings.json"
+          - *standard-skeleton
+          - *claude-settings
         targets:
-          preset: "preset/docker-targets.yml"
-        badges:
-          preset: "preset/docker-badges.yml"
+          preset: "preset/binary-targets.yml"
         security:
           preset: "preset/security.yml"
-        dependency:
-          preset: "preset/dependency.yml"
-        docs:
-          preset: "preset/docs.yml"
-        commit:
-          preset: "preset/commit.yml"
-        release:
-          preset: "preset/release.yml"
         lint:
           preset: "preset/lint-full.yml"
 
-    - id: docker-binary
+    # ── PrPlanIT: Binaries + Docker (OCI) ────────────────────────
+    - id: prplanit-binary-docker
       targets:
         repos:
           - "PrPlanIT/StageFreight"
           - "PrPlanIT/HASteward"
       stagefreight:
         version: 1
+        vars:
+          preset: "preset/vars-prplanit.yml"
         assets:
-          - id: ci-skeleton
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-              ref: "main"
-              path: "integrations/gitlab/standard.gitlab-ci.yml"
-            target: ".gitlab-ci.yml"
-          - id: claude-settings
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
-              ref: "main"
-              path: "claude-code/project-settings.json"
-            target: ".claude/settings.json"
-        targets:
-          preset: "preset/docker-targets.yml"
-        badges:
-          preset: "preset/docker-badges.yml"
-        security:
-          preset: "preset/security.yml"
-        dependency:
-          preset: "preset/dependency.yml"
-        docs:
-          preset: "preset/docs.yml"
-        commit:
-          preset: "preset/commit.yml"
-        release:
-          preset: "preset/release.yml"
-        lint:
-          preset: "preset/lint-full.yml"
+          - *standard-skeleton
+          - *claude-settings
+        <<: *full-docker-presets
 
-    - id: docker-component
+    # ── PrPlanIT: Docker (OCI) ───────────────────────────────────
+    - id: prplanit-docker
       targets:
         repos:
+          - "PrPlanIT/fairer-pages"
+          - "PrPlanIT/oh-CI"
+      stagefreight:
+        version: 1
+        vars:
+          preset: "preset/vars-prplanit.yml"
+        assets:
+          - *standard-skeleton
+          - *claude-settings
+        <<: *full-docker-presets
+
+    # ── HomeLabHD: Docker services ───────────────────────────────
+    - id: hlhd-docker
+      targets:
+        repos:
+          - "PrPlanIT/HomeLabHD/apt-cacher-ng"
+          - "PrPlanIT/HomeLabHD/prometheus-eaton-ups-exporter"
+          - "PrPlanIT/HomeLabHD/sm-lickitung-gen"
           - "PrPlanIT/HomeLabHD/ansible"
       stagefreight:
         version: 1
+        vars:
+          preset: "preset/vars-hlhd.yml"
         assets:
-          - id: ci-skeleton
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-              ref: "main"
-              path: "integrations/gitlab/standard.gitlab-ci.yml"
-            target: ".gitlab-ci.yml"
-          - id: claude-settings
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
-              ref: "main"
-              path: "claude-code/project-settings.json"
-            target: ".claude/settings.json"
-        targets:
-          preset: "preset/docker-targets.yml"
-        badges:
-          preset: "preset/docker-badges.yml"
-        security:
-          preset: "preset/security.yml"
-        dependency:
-          preset: "preset/dependency.yml"
-        docs:
-          preset: "preset/docs.yml"
-        commit:
-          preset: "preset/commit.yml"
-        release:
-          preset: "preset/release.yml"
-        lint:
-          preset: "preset/lint-full.yml"
+          - *standard-skeleton
+          - *claude-settings
+        <<: *full-docker-presets
 
-    - id: gitops-repos
+    # ── SoFMeRight: GitOps repos ────────────────────────────────
+    - id: sofmeright-dungeon
       targets:
         repos:
           - "SoFMeRight/dungeon"
       stagefreight:
         version: 1
+        vars:
+          preset: "preset/vars-sofmeright.yml"
         assets:
-          - id: ci-skeleton
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-              ref: "main"
-              path: "integrations/gitlab/lightweight.gitlab-ci.yml"
-            target: ".gitlab-ci.yml"
-          - id: claude-settings
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
-              ref: "main"
-              path: "claude-code/project-settings.json"
-            target: ".claude/settings.json"
+          - *lightweight-skeleton
+          - *claude-settings
         docs:
           preset: "preset/docs.yml"
         commit:
           preset: "preset/commit.yml"
-        lint:
-          preset: "preset/lint-full.yml"
-
-    - id: binary-apps
-      targets:
-        repos:
-          - "PrPlanIT/DisplayWizard"
-      stagefreight:
-        version: 1
-        assets:
-          - id: ci-skeleton
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-              ref: "main"
-              path: "integrations/gitlab/standard.gitlab-ci.yml"
-            target: ".gitlab-ci.yml"
-          - id: claude-settings
-            source:
-              repo_url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
-              ref: "main"
-              path: "claude-code/project-settings.json"
-            target: ".claude/settings.json"
-        targets:
-          preset: "preset/binary-targets.yml"
-        security:
-          preset: "preset/security.yml"
         lint:
           preset: "preset/lint-full.yml"
