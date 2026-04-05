@@ -1,4 +1,4 @@
 vars:
   org: prplanit
   github_org: PrPlanIT
-  gitlab_group: "PrPlanIT/HomeLabHD"
+  gitlab_group: "HomeLabHD"

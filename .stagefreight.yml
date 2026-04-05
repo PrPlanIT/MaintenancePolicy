@@ -108,10 +108,10 @@ governance:
     - id: hlhd-docker
       targets:
         repos:
-          - "PrPlanIT/HomeLabHD/apt-cacher-ng"
-          - "PrPlanIT/HomeLabHD/prometheus-eaton-ups-exporter"
-          - "PrPlanIT/HomeLabHD/sm-lickitung-gen"
-          - "PrPlanIT/HomeLabHD/ansible"
+          - "HomeLabHD/apt-cacher-ng"
+          - "HomeLabHD/prometheus-eaton-ups-exporter"
+          - "HomeLabHD/sm-lickitung-gen"
+          - "HomeLabHD/ansible"
       stagefreight:
         version: 1
         vars:
