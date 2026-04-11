@@ -1,29 +1,19 @@
 version: 1
 
-sources:
-  primary:
-    url: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
-    default_branch: "main"
+ci:
+  image: docker.io/prplanit/stagefreight:latest-dev
 
-lifecycle:
-  mode: governance
-
+# ──────────────────────────────────────────────────────────────────────
+# Aliases: defined once, referenced by clusters and dogfood config below.
+# ──────────────────────────────────────────────────────────────────────
 defaults:
   # ── Shared asset declarations ──────────────────────────────────
-  standard-skeleton: &standard-skeleton
+  ci-skeleton: &ci-skeleton
     id: ci-skeleton
     source:
       repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
       ref: "main"
-      path: "integrations/gitlab/standard.gitlab-ci.yml"
-    target: ".gitlab-ci.yml"
-
-  lightweight-skeleton: &lightweight-skeleton
-    id: ci-skeleton
-    source:
-      repo_url: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-      ref: "main"
-      path: "integrations/gitlab/lightweight.gitlab-ci.yml"
+      path: "integrations/gitlab/gitlab-ci.yml"
     target: ".gitlab-ci.yml"
 
   claude-settings: &claude-settings
@@ -34,12 +24,14 @@ defaults:
       path: "claude-code/project-settings.json"
     target: ".claude/settings.json"
 
-  # ── Shared preset blocks ───────────────────────────────────────
-  full-docker-presets: &full-docker-presets
-    targets:
-      preset: "preset/docker-targets.yml"
-    badges:
-      preset: "preset/docker-badges.yml"
+  # ── Baseline dials (always on for every governed repo) ─────────
+  # Every dial that CAN be on, IS on. Clusters differ only in which
+  # targets/badges presets they compose — never in the baseline.
+  common-presets: &common-presets
+    versioning:
+      preset: "preset/versioning.yml"
+    matchers:
+      preset: "preset/matchers.yml"
     security:
       preset: "preset/security.yml"
     dependency:
@@ -53,6 +45,48 @@ defaults:
     lint:
       preset: "preset/lint-full.yml"
 
+# ──────────────────────────────────────────────────────────────────────
+# MaintenancePolicy's own config (dogfood)
+#
+# Governance repo: consumes its own common baseline. No artifacts to
+# publish — no targets, no registries, no badges.
+# ──────────────────────────────────────────────────────────────────────
+forges:
+  - id: gitlab
+    provider: gitlab
+    url: "https://gitlab.prplanit.com"
+    credentials: GITLAB
+
+  - id: github
+    provider: github
+    url: "https://github.com"
+    credentials: GITHUB
+
+repos:
+  - id: primary
+    forge: gitlab
+    project: "PrPlanIT/MaintenancePolicy"
+    roles: [primary]
+    branches:
+      default: main
+    worktree: "."
+
+  - id: github-mirror
+    forge: github
+    project: "PrPlanIT/MaintenancePolicy"
+    roles: [mirror]
+    sync:
+      git: true
+      releases: true
+
+lifecycle:
+  mode: governance
+
+<<: *common-presets
+
+# ──────────────────────────────────────────────────────────────────────
+# Governed clusters
+# ──────────────────────────────────────────────────────────────────────
 governance:
   clusters:
     # ── PrPlanIT: Binary apps ────────────────────────────────────
@@ -65,14 +99,13 @@ governance:
         vars:
           preset: "preset/vars-prplanit.yml"
         assets:
-          - *standard-skeleton
+          - *ci-skeleton
           - *claude-settings
+        <<: *common-presets
         targets:
-          preset: "preset/binary-targets.yml"
-        security:
-          preset: "preset/security.yml"
-        lint:
-          preset: "preset/lint-full.yml"
+          presets:
+            - preset/targets-binary-archives.yml
+            - preset/targets-shared-release.yml
 
     # ── PrPlanIT: Binaries + Docker (OCI) ────────────────────────
     - id: prplanit-binary-docker
@@ -85,9 +118,22 @@ governance:
         vars:
           preset: "preset/vars-prplanit.yml"
         assets:
-          - *standard-skeleton
+          - *ci-skeleton
           - *claude-settings
-        <<: *full-docker-presets
+        <<: *common-presets
+        registries:
+          preset: "preset/registries.yml"
+        targets:
+          presets:
+            - preset/targets-binary-archives.yml
+            - preset/targets-docker-registries.yml
+            - preset/targets-docker-readme.yml
+            - preset/targets-shared-release.yml
+        badges:
+          items:
+            presets:
+              - preset/badges-core.yml
+              - preset/badges-docker.yml
 
     # ── PrPlanIT: Docker (OCI) ───────────────────────────────────
     - id: prplanit-docker
@@ -100,13 +146,26 @@ governance:
         vars:
           preset: "preset/vars-prplanit.yml"
         assets:
-          - *standard-skeleton
+          - *ci-skeleton
           - *claude-settings
-        <<: *full-docker-presets
+        <<: *common-presets
+        registries:
+          preset: "preset/registries.yml"
+        targets:
+          presets:
+            - preset/targets-docker-registries.yml
+            - preset/targets-docker-readme.yml
+            - preset/targets-shared-release.yml
+        badges:
+          items:
+            presets:
+              - preset/badges-core.yml
+              - preset/badges-docker.yml
 
     # ── HomeLabHD: Docker services ───────────────────────────────
     - id: hlhd-docker
       targets:
+        credentials: GITLAB_HOMELABHD
         repos:
           - "HomeLabHD/apt-cacher-ng"
           - "HomeLabHD/prometheus-eaton-ups-exporter"
@@ -117,13 +176,26 @@ governance:
         vars:
           preset: "preset/vars-hlhd.yml"
         assets:
-          - *standard-skeleton
+          - *ci-skeleton
           - *claude-settings
-        <<: *full-docker-presets
+        <<: *common-presets
+        registries:
+          preset: "preset/registries.yml"
+        targets:
+          presets:
+            - preset/targets-docker-registries.yml
+            - preset/targets-docker-readme.yml
+            - preset/targets-shared-release.yml
+        badges:
+          items:
+            presets:
+              - preset/badges-core.yml
+              - preset/badges-docker.yml
 
-    # ── SoFMeRight: GitOps repos ────────────────────────────────
+    # ── SoFMeRight: GitOps repos ─────────────────────────────────
     - id: sofmeright-dungeon
       targets:
+        credentials: GITLAB_SOFMERIGHT
         repos:
           - "SoFMeRight/dungeon"
       stagefreight:
@@ -131,11 +203,6 @@ governance:
         vars:
           preset: "preset/vars-sofmeright.yml"
         assets:
-          - *lightweight-skeleton
+          - *ci-skeleton
           - *claude-settings
-        docs:
-          preset: "preset/docs.yml"
-        commit:
-          preset: "preset/commit.yml"
-        lint:
-          preset: "preset/lint-full.yml"
+        <<: *common-presets
