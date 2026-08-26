@@ -1,0 +1,9 @@
+forges:
+  gitlab:
+    provider: gitlab
+    url: "https://gitlab.prplanit.com"
+    credentials: GITLAB
+  github:
+    provider: github
+    url: "https://github.com"
+    credentials: GITHUB

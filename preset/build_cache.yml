@@ -1,0 +1,10 @@
+build_cache:
+  mode: hybrid
+  external:
+    registry: harbor
+    path: "cache"
+    fallback: "main"
+  local:
+    retention:
+      max_age: "7d"
+      max_size: "8GB"

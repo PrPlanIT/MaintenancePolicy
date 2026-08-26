@@ -1,0 +1,140 @@
+# stencils — from osticket (preferred); contents-* build-ref = generic 'image'.
+stencils:
+  build:
+    label: build
+    message: '{env:BUILD_STATUS}'
+    color: auto
+    font: monofur
+    link: https://gitlab.prplanit.com/{var:gitlab_group}/{var:repo}/-/pipelines
+  license:
+    label: license
+    message: '{var:license}'
+    color: '#310937'
+    font: monofur
+    link: LICENSE
+  release:
+    label: release
+    message: v{base}
+    color: '#74ecbe'
+    font: dejavu-sans
+    font_size: 11
+    link: https://github.com/{var:github_org}/{var:github_repo}/releases
+  updated:
+    label: updated
+    message: '{commit.date}'
+    color: '#236144'
+    font: dejavu-sans
+    font_size: 11
+  pulls:
+    label: pulls
+    message: '{registry.dockerhub.pulls}'
+    color: '#1d63ed'
+    link: https://hub.docker.com/r/{var:org}/{var:repo}
+  release-latest:
+    label: latest
+    message: v{base}
+    color: '#74ecbe'
+    font: dejavu-sans
+    font_size: 11
+    link: https://github.com/{var:github_org}/{var:repo}/pkgs/container/{var:repo}
+  release-updated:
+    label: updated
+    message: '{registry.ghcr.tag.v{base}.updated}'
+    color: '#236144'
+    font: dejavu-sans
+    font_size: 11
+  release-size:
+    label: size
+    message: '{registry.ghcr.tag.v{base}.size}'
+    color: '#555'
+    font: dejavu-sans
+    font_size: 11
+    link: https://github.com/{var:github_org}/{var:repo}/pkgs/container/{var:repo}
+  dev-latest:
+    label: latest-dev
+    message: dev-{{sha}}
+    color: '#3b82f6'
+    font: dejavu-sans
+    font_size: 11
+    link: https://github.com/{var:github_org}/{var:repo}/pkgs/container/{var:repo}
+  dev-updated:
+    label: updated
+    message: '{registry.ghcr.tag.latest-dev.updated}'
+    color: '#236144'
+    font: dejavu-sans
+    font_size: 11
+  dev-size:
+    label: size
+    message: '{registry.ghcr.tag.latest-dev.size}'
+    color: '#555'
+    font: dejavu-sans
+    font_size: 11
+    link: https://github.com/{var:github_org}/{var:repo}/pkgs/container/{var:repo}
+  donate:
+    render: shield
+    message: donate
+    color: '#FF5E5B'
+    logo: ko-fi
+    logo_color: white
+    link: https://ko-fi.com/T6T41IT163
+  sponsor:
+    render: shield
+    message: sponsor
+    color: '#EA4AAA'
+    logo: githubsponsors
+    logo_color: white
+    link: https://github.com/sponsors/{var:github_org}
+  github:
+    render: shield
+    label: GitHub
+    message: source
+    color: '#181717'
+    logo: github
+    link: https://github.com/{var:github_org}/{var:github_repo}
+  gitlab:
+    render: shield
+    label: GitLab
+    message: source
+    color: '#FC6D26'
+    logo: gitlab
+    link: https://gitlab.prplanit.com/{var:gitlab_group}/{var:repo}
+  docker:
+    render: shield
+    label: Docker
+    message: '{var:org}/{var:repo}'
+    color: '#2496ED'
+    logo: docker
+    logo_color: white
+    link: https://hub.docker.com/r/{var:org}/{var:repo}
+  ghcr:
+    render: shield
+    label: GHCR
+    message: homelabhd/{var:repo}
+    color: '#181717'
+    logo: github
+    logo_color: white
+    link: https://github.com/{var:github_org}/{var:repo}/pkgs/container/{var:repo}
+  harbor:
+    render: shield
+    label: Harbor
+    message: '{var:org}/{var:repo}'
+    color: '#60b932'
+    link: https://cr.pcfae.com/harbor/projects
+  last-commit:
+    type: github-last-commit
+  issues-open:
+    type: github-issues-open
+  prs-open:
+    type: github-prs-open
+  contributors:
+    type: github-contributors
+  contents-base:
+    type: contents
+    build: image
+    section: inventories.versions
+    render: badges
+  contents-apk:
+    type: contents
+    build: image
+    section: inventories.apk
+    render: badges

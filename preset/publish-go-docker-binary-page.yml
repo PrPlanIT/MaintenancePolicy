@@ -1,0 +1,130 @@
+publish:                                 # distribute artifacts to their destinations (was targets:); id→target map
+  # ── Stable releases → all registries (fans via registry: list) ───
+  stable:
+    kind: registry
+    registry: [dockerhub, ghcr, harbor]
+    build: stagefreight
+    tags: ["v{version}", "latest"]
+    when: { git_tags: [stable], events: [tag] }
+
+  # ── Pre-releases (alpha/beta/rc) → Docker Hub + GHCR ─────────────
+  prerelease:
+    kind: registry
+    registry: [dockerhub, ghcr]
+    build: stagefreight
+    tags: ["v{version}"]
+    when: { git_tags: [prerelease], events: [tag] }
+
+  # ── Dev builds on every commit → all registries (retained/pruned) ──
+  dev:
+    kind: registry
+    registry: [dockerhub, ghcr, harbor]
+    build: stagefreight
+    tags: ["dev-{sha:8}", "latest-dev"]
+    when: { branches: [main], events: [push] }
+    retention:
+      keep_last: 6   # latest-dev is rolling (no sequence var) → auto-exempt, no protect needed
+
+  # ── Harbor: per-branch test builds (Harbor ONLY, never Docker Hub) ──
+  # Every non-main branch push crucible-builds to Harbor so a protected branch
+  # pipeline can point its CI image at the branch build and let the candidate
+  # govern itself end-to-end before merge. The test-* / latest-test-* tag
+  # namespace IS the throwaway channel — images carry no release/prerelease flag
+  # (that is a forge-release concept, not an image one).
+  harbor-test:
+    kind: registry
+    registry: harbor
+    build: stagefreight
+    tags: ["test-{branch}-{sha:8}", "latest-test-{branch}"]
+    when: { branches: ["!main"], events: [push] }
+    retention:
+      keep_last: 6        # per-branch: 6 test builds kept for EACH branch (grouped by {branch})
+      keep_branches: 10   # bound retired branches — keep the 10 most-recently-active; latest-test-{branch} is rolling per branch (auto-exempt)
+
+  # ── Project identity: registries + forge repos ───────────────────
+  project-meta:                          # project identity → registries + forge repos, one source of truth
+    kind: metadata
+    registry: [dockerhub, harbor]        # Docker Hub Overview + Harbor Info (long body); short description capped per vendor
+    repos: [github-mirror, primary]      # GitHub (description/website/topics) + GitLab (description/topics)
+    description:                          # length-tiered variants — the engine fits each destination's cap
+      # full (~380) — GitLab & other generous caps
+      - "A declarative lifecycle runtime that governs Git as the source of truth, enforcing operator-defined intent across GitOps workflows, Kubernetes, Docker, and CI ecosystems. StageFreight is open-source, self-building, and replaces fragile shell-script CI pipelines with a single Go binary driven by one .stagefreight.yml file. There's a setting for every stage — this is theatre."
+      # mid (~265) — GitHub's ~350 cap
+      - "A declarative lifecycle runtime that governs Git as the source of truth — GitOps, Kubernetes, Docker & CI from one .stagefreight.yml. Open-source, self-building; replaces fragile shell-script pipelines with a single Go binary. A setting for every stage — this is theatre."
+      # short (~83) — Docker Hub's ~100 cap
+      - "A declarative lifecycle runtime — GitOps, Kubernetes, Docker & CI from one manifest"
+    readme: README.md                    # long markdown body where the destination has one
+    website: https://stagefreight.prplanit.com
+    topics: [ci-cd, gitops, kubernetes, docker, devops, lifecycle-runtime]
+    when: { branches: [main], events: [push, tag] }
+
+  # ── Binary archives: linux amd64/arm64 + SHA256SUMS ──────────────
+  # ONE archive recipe, fired on EITHER trigger (when: is an OR-list of condition
+  # sets) — {version} differentiates stable (1.2.3) from dev (1.2.3-dev+sha). Feeds
+  # both release (stable tag) and dev-release (main push).
+  stagefreight-binaries:
+    kind: binary-archive
+    build: stagefreight-bin
+    name: "stagefreight-{version}-{os}-{arch}"
+    format: auto
+    checksums: true
+    when:
+      - { git_tags: [stable], events: [tag] }   # feeds release
+      - { branches: [main], events: [push] }    # feeds dev-release
+
+  # ── Stable release (gitlab + github) with rolling aliases + binaries ──
+  # One target authors the release on BOTH forges. The rolling alias tags
+  # (v{version}, latest) are created on the primary only; github receives those
+  # tags via the git sync (tags: exact) and the release object via its repos:
+  # entry — so the rolling tags are never double-managed.
+  release:
+    kind: release
+    notes: release-notes
+    type: latest
+    repos: [primary, github-mirror]
+    archives: stagefreight-binaries
+    aliases: ["v{version}", "latest"]
+    when: { git_tags: [stable], events: [tag] }
+
+  # ── Dev binary release channel: rolling latest-dev + retained immutable
+  #    dev-{sha8}, pruned like the docker dev images. Dogfoods the binary
+  #    release-channel feature. Authored on BOTH the primary (gitlab) and the
+  #    github mirror via kind:release — retention now prunes dev-{sha8} on the
+  #    mirror too (release-target repos are retained), so it no longer accumulates.
+  dev-release:
+    kind: release
+    notes: release-notes
+    repos: [primary, github-mirror]  # dev release on gitlab AND github (mirror is git-only for refs)
+    archives: stagefreight-binaries  # the same one recipe as release (OR-list when:)
+    tag: "dev-{sha:8}"
+    aliases: ["latest-dev"]
+    type: prerelease
+    retention:
+      keep_last: 6   # latest-dev is rolling (no sequence var) → auto-exempt, no protect needed
+    when: { branches: [main], events: [push] }
+
+  # ── Documentation site → Cloudflare Pages ────────────────────────
+  # Deploy the built docs-site tree to stagefreight.prplanit.com on version tags only, so
+  # the mkdocs build that generates the site + the Cloudflare deploy run once per release
+  # instead of on every main commit — no per-push churn or deploy-budget burn. Cloudflare
+  # auto-wires DNS. Credentials: CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID.
+  docs:
+    kind: pages
+    provider: cloudflare
+    project: stagefreight
+    build: docs-site
+    domain: stagefreight.prplanit.com
+    when: { git_tags: [stable], events: [tag] }
+
+  # ── Documentation site → GitHub Pages (dogfood, alongside Cloudflare) ──
+  # Force-pushes the same docs-site tree to the gh-pages branch of the GitHub mirror,
+  # served at https://prplanit.github.io/StageFreight/. No custom domain — Cloudflare
+  # owns stagefreight.prplanit.com. Requires GITHUB_TOKEN (contents:write) AND GitHub
+  # Pages enabled on the repo with source = gh-pages branch.
+  docs-github:
+    kind: pages
+    provider: github
+    project_id: "{var:github_org}/{var:github_repo}"
+    credentials: GITHUB
+    build: docs-site
+    when: { git_tags: [stable], events: [tag] }

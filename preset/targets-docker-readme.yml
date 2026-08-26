@@ -1,0 +1,7 @@
+targets:
+  # ── Docker Hub: README sync ──────────────────────────────────────
+  - id: dockerhub-readme
+    kind: docker-readme
+    registry: dockerhub
+    when: { branches: [main], events: [push, tag] }
+    file: "README.md"

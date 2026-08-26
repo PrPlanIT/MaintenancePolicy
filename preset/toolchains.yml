@@ -1,0 +1,6 @@
+toolchains:
+  trivy: "0.x"
+  syft: "1.x"
+  grype: "0.x"
+  osv-scanner: "2.x"
+  cosign: "3.x"

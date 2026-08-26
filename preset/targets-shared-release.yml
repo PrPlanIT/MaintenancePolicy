@@ -1,0 +1,6 @@
+targets:
+  # ── Primary release (rolling git tag aliases) ────────────────────
+  - id: primary-release
+    kind: release
+    aliases: ["v{version}", "latest"]
+    when: { git_tags: [stable], events: [tag] }

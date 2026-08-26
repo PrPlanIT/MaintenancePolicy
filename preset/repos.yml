@@ -1,0 +1,15 @@
+repos:
+  primary:
+    forge: gitlab
+    project: "{var:gitlab_group}/{var:repo}"
+    roles: [primary]
+    branches:
+      default: main
+    worktree: "."
+  github-mirror:
+    forge: github
+    project: "{var:github_org}/{var:github_repo}"
+    roles: [mirror, publish-origin]
+    sync:
+      git: true
+      releases: true

@@ -16,13 +16,17 @@ This repo IS a StageFreight-managed repo. Its `.stagefreight.yml` declares gover
 
 ## Governed files
 
-Governance distributes files to satellite repos. Which files are governed and how drift is handled is policy-declared per file:
+Governance may manage specific files in satellite repos. Each governed file has one of two behaviors:
 
-- **governed + replace** — machine-owned, drift is overwritten (e.g., `.stagefreight/stagefreight-managed.yml`, `.gitlab-ci.yml`)
-- **governed + warn** — governance-seeded, drift emits warning but still replaces
-- **local-friendly + warn** — seeded as starter, local edits tolerated
-- **local-friendly + ignore** — seeded once, never touched again
+- **authoritative** — governance defines the file; drift is replaced
+- **advisory** — governance may seed or validate the file; drift is not overwritten
 
-`.stagefreight.yml` may itself be governance-seeded or governance-enforced when policy declares it governed. Governance ownership is policy-declared per file, not hardcoded by filename.
+Which files are governed and their behavior is declared by policy, not hardcoded by filename.
+
+Examples:
+- `.stagefreight/stagefreight-managed.yml` → authoritative
+- `.gitlab-ci.yml` → authoritative
+- `.claude/settings.json` → authoritative
+- `.stagefreight.yml` → may be authoritative or advisory depending on policy
 
 Detaching from governance is always possible.

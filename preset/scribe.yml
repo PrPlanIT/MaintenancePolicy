@@ -1,0 +1,69 @@
+# scribe — adopted from osticket (preferred): rich readme.image (all registry +
+# release/dev badges) + readme.contents sections.
+scribe:
+  files:
+    readme.badges:
+      file: README.md
+      between:
+      - <!-- sf:badges:start -->
+      - <!-- sf:badges:end -->
+      inline: true
+      items:
+      - build
+      - license
+      - release
+      - updated
+      - donate
+      - sponsor
+    readme.project:
+      file: README.md
+      between:
+      - <!-- sf:project:start -->
+      - <!-- sf:project:end -->
+      inline: true
+      items:
+      - github
+      - gitlab
+      - last-commit
+      - issues-open
+      - prs-open
+      - contributors
+    readme.image:
+      file: README.md
+      between:
+      - <!-- sf:image:start -->
+      - <!-- sf:image:end -->
+      items:
+      - ghcr
+      - docker
+      - pulls
+      - harbor
+      - br
+      - release-latest
+      - release-updated
+      - release-size
+      - dev-latest
+      - dev-updated
+      - dev-size
+    readme.contents.base:
+      file: README.md
+      between:
+      - <!-- sf:contents-base:start -->
+      - <!-- sf:contents-base:end -->
+      items:
+      - contents-base
+    readme.contents.apk:
+      file: README.md
+      between:
+      - <!-- sf:contents-apk:start -->
+      - <!-- sf:contents-apk:end -->
+      items:
+      - contents-apk
+  commit:
+    type: docs
+    message: refresh generated docs and badges
+    add:
+    - README.md
+    - .stagefreight/scribe
+    push: true
+    skip_ci: true

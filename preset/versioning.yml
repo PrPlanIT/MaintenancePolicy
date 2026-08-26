@@ -1,0 +1,12 @@
+versioning:
+  tag_sources:
+    - id: stable
+      pattern: "^v?\\d+\\.\\d+\\.\\d+$"
+    - id: prerelease
+      pattern: "^v?\\d+\\.\\d+\\.\\d+-.+"
+  branch_builds:
+    - id: default
+      base_from: [stable]
+      format: "{base}-dev+{sha}"
+  no_lineage:
+    mode: error
