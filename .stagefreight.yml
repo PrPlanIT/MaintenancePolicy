@@ -30,6 +30,9 @@ governance:
   clusters:
     - id: rebaseable-fork-docker
       targets:
+        # HomeLabHD-scoped token (has write to the group + its protected branches).
+        # reconcile auths with GITLAB_HOMELABHD_TOKEN instead of the default GITLAB_*.
+        credentials: GITLAB_HOMELABHD
         repos:
           - "HomeLabHD/prometheus-eaton-ups-exporter"
       stagefreight:
