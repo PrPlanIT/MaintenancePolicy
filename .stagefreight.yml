@@ -130,11 +130,11 @@ governance:
           config:
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
-              contents-base:     { type: contents, build: ansible, section: inventories.versions, render: badges }
-              contents-apk:      { type: contents, build: ansible, section: inventories.apk, render: badges }
-              contents-pip:      { type: contents, build: ansible, section: inventories.pip, render: badges }
-              contents-galaxy:   { type: contents, build: ansible, section: inventories.galaxy, render: badges }
-              contents-binaries: { type: contents, build: ansible, section: inventories.binaries, render: badges }
+              contents-base:     { type: contents, build: image, section: inventories.versions, render: badges }
+              contents-apk:      { type: contents, build: image, section: inventories.apk, render: badges }
+              contents-pip:      { type: contents, build: image, section: inventories.pip, render: badges }
+              contents-galaxy:   { type: contents, build: image, section: inventories.galaxy, render: badges }
+              contents-binaries: { type: contents, build: image, section: inventories.binaries, render: badges }
             scribe:
               preset: "preset/scribe-docker.yml"
               files:
@@ -180,7 +180,7 @@ governance:
           config:
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
-              contents-base: { type: contents, build: ark-se-server, section: inventories.versions, render: badges }
+              contents-base: { type: contents, build: image, section: inventories.versions, render: badges }
             scribe:
               preset: "preset/scribe-docker.yml"
               files:
@@ -254,8 +254,8 @@ governance:
           config:
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
-              contents-base: { type: contents, build: osticket, section: inventories.versions, render: badges }
-              contents-apk:  { type: contents, build: osticket, section: inventories.apk, render: badges }
+              contents-base: { type: contents, build: image, section: inventories.versions, render: badges }
+              contents-apk:  { type: contents, build: image, section: inventories.apk, render: badges }
             scribe:
               preset: "preset/scribe-docker.yml"
               files:
