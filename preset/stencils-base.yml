@@ -1,9 +1,8 @@
-# Core badge stencils — every repo gets these two rows. Coordinates are FACTS, not
-# {var:} literals: {path.<forge>} from each forge default_path, {org.<surface>} from org
-# aliases, {metadata.license} from metadata:, {stagefreight.version} = the running SF
-# binary. Compose with stencils-go.yml / stencils-docker.yml via `stencils: { presets: [...] }`.
+# Base badge stencils — identity + social, shared by EVERY repo type. Coordinates are
+# facts: {path.<forge>} (forge default_path), {org.<surface>} (org aliases),
+# {metadata.license}, {stagefreight.version}. Compose with a status set (stencils-status
+# for build/release repos, stencils-pipeline for CI-only repos) + optional go/docker.
 stencils:
-  # ── row 1 · project (identity + social) ──
   repo-gl:      { render: shield, label: GitLab, message: source, color: "#FC6D26", logo: gitlab, link: "https://gitlab.prplanit.com/{path.gitlab}" }
   repo-gh:      { render: shield, label: GitHub, message: mirror, color: "#181717", logo: github, link: "https://github.com/{path.github}" }
   license:      { label: license, message: "{metadata.license}", color: "#310937", font: monofur, link: LICENSE }
@@ -12,9 +11,5 @@ stencils:
   contributors: { type: github-contributors }
   donate:       { render: shield, message: donate,  color: "#FF5E5B", logo: ko-fi,          logo_color: white, link: "https://ko-fi.com/T6T41IT163" }
   sponsor:      { render: shield, message: sponsor, color: "#EA4AAA", logo: githubsponsors, logo_color: white, link: "https://github.com/sponsors/{org.github}" }
-
-  # ── row 2 · status ──
-  release:      { label: release, message: "v{base}", color: "#74ecbe", font: dejavu-sans, font_size: 11, link: "https://github.com/{path.github}/releases" }
-  build:        { label: build, message: "{env:BUILD_STATUS}", color: auto, font: monofur, link: "https://gitlab.prplanit.com/{path.gitlab}/-/pipelines" }
   last-commit:  { type: github-last-commit }
   stagefreight: { render: shield, label: StageFreight, message: "{stagefreight.version}", color: "#310937", logo: readthedocs, logo_color: white, link: "https://stagefreight.prplanit.com" }

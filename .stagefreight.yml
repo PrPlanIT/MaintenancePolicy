@@ -119,7 +119,7 @@ governance:
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
         toolchains: { preset: "preset/toolchains.yml" }
-        stencils: { presets: ["preset/stencils-core.yml", "preset/stencils-docker.yml"] }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         scribe: { preset: "preset/scribe-docker.yml" }
 
       # WHO — the catalog. A BRANDED entry: governance distributes this repo's identity
@@ -140,5 +140,5 @@ governance:
 # ── badges: the control repo dogfoods the SAME shared preset library it ships. The
 # standard rows come from the presets (no inline stencils); MP is neither Go nor a
 # container, so it takes the plain-app scribe rows. publish (all modes) renders them. ──
-stencils: { preset: "preset/stencils-core.yml" }
-scribe:   { preset: "preset/scribe-app.yml" }
+stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-pipeline.yml"] }
+scribe:   { preset: "preset/scribe-governance.yml" }

@@ -1,4 +1,5 @@
-# Scribe rows for a plain repo (no container, not Go): project + status.
+# Scribe rows for a governance control repo: it runs CI but builds/releases nothing,
+# so row 2 is pipeline status (not "build") + last-commit + the SF version — no release.
 scribe:
   files:
     readme.project:
@@ -10,7 +11,7 @@ scribe:
       file: README.md
       between: ["<!-- sf:badges:start -->", "<!-- sf:badges:end -->"]
       inline: true
-      items: [release, build, last-commit, stagefreight]
+      items: [pipeline, last-commit, stagefreight]
   commit:
     type: docs
     message: "refresh generated badges"
