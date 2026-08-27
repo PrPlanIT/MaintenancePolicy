@@ -1,0 +1,9 @@
+# Python test suite: pytest via the StageFreight python toolchain. The interpreter is
+# provisioned and a content-addressed venv is bootstrapped from the project's own
+# dependency declaration (pyproject [test] extra / requirements*.txt), so a repo needs
+# nothing beyond declaring its deps the standard way.
+test:
+  suites:
+    unit:
+      tool: python
+      gate: perform

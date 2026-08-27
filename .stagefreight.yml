@@ -120,11 +120,15 @@ governance:
       repos:
         prometheus-eaton-ups-exporter:
           at: HomeLabHD/prometheus-eaton-ups-exporter
+          # A deviating entry: this repo is Python, so it overrides the profile's
+          # (docker-only) config with a pytest suite. The profile stays language-neutral.
+          config:
+            test: { preset: "preset/test-python.yml" }
           title: "Eaton UPS Exporter"
           description:
-            - "Prometheus exporter for Eaton UPS devices over SNMP/HTTP."
-            - "Rootless container exporting Eaton UPS load, runtime, battery, and I/O metrics to Prometheus."
-          topics: [prometheus, exporter, ups, eaton, monitoring, snmp]
+            - "Prometheus exporter for Eaton UPS devices via the Eaton REST API."
+            - "Rootless container exporting Eaton UPS load, runtime, battery, and I/O metrics to Prometheus, scraped over the UPS web API."
+          topics: [prometheus, exporter, ups, eaton, monitoring]
           license: MIT
           category: monitoring
 
