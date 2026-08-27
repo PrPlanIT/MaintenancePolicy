@@ -1,28 +1,15 @@
-<h1 align="center">Maintenance Policy</h1>
+# Maintenance Policy
 
-<p align="center"><em>One repo that remembers, so the others don't have to.</em></p>
+> *One repo that remembers, so the others don't have to.*
 
-<p align="center">
+The [StageFreight](https://gitlab.prplanit.com/PrPlanIT/StageFreight) **governance control repo** for the PrPlanIT / HomeLabHD fleet — the one place that owns the three things every managed repo would otherwise duplicate and drift on: **identity** (`orgs:` + `metadata:`), **policy** (the shared `preset/` CI lifecycle), and the **catalog** of governed repos. When its pipeline runs, `stagefreight governance reconcile` resolves the presets, stamps each repo's identity, and commits the managed config back into the satellite — a fleet-wide change is one commit here, not *N* commits everywhere.
+
+<!-- sf:project:start -->
+[![GitLab](https://img.shields.io/badge/GitLab-source-FC6D26?logo=gitlab)](https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy) [![GitHub](https://img.shields.io/badge/GitHub-mirror-181717?logo=github)](https://github.com/PrPlanIT/MaintenancePolicy) [![Last Commit](https://img.shields.io/github/last-commit/PrPlanIT/MaintenancePolicy)](https://github.com/PrPlanIT/MaintenancePolicy/commits) [![Contributors](https://img.shields.io/github/contributors/PrPlanIT/MaintenancePolicy)](https://github.com/PrPlanIT/MaintenancePolicy/graphs/contributors)
+<!-- sf:project:end -->
 <!-- sf:badges:start -->
 [![license](https://raw.githubusercontent.com/PrPlanIT/MaintenancePolicy/main/.stagefreight/scribe/license.svg)](https://github.com/PrPlanIT/MaintenancePolicy/blob/main/LICENSE) ![updated](https://raw.githubusercontent.com/PrPlanIT/MaintenancePolicy/main/.stagefreight/scribe/updated.svg) [![governed by](https://img.shields.io/badge/governed_by-StageFreight-310937?logo=readthedocs&logoColor=white)](https://gitlab.prplanit.com/PrPlanIT/StageFreight)
 <!-- sf:badges:end -->
-</p>
-
-<p align="center">
-<!-- sf:project:start -->
-[![GitLab](https://img.shields.io/badge/GitLab-source-FC6D26?logo=gitlab)](https://gitlab.prplanit.com/{path.gitlab}) [![GitHub](https://img.shields.io/badge/GitHub-mirror-181717?logo=github)](https://github.com/{path.github}) [![Last Commit](https://img.shields.io/github/last-commit/PrPlanIT/MaintenancePolicy)](https://github.com/PrPlanIT/MaintenancePolicy/commits) [![Contributors](https://img.shields.io/github/contributors/PrPlanIT/MaintenancePolicy)](https://github.com/PrPlanIT/MaintenancePolicy/graphs/contributors)
-<!-- sf:project:end -->
-</p>
-
----
-
-**MaintenancePolicy** is the [StageFreight](https://gitlab.prplanit.com/PrPlanIT/StageFreight) **governance control repo** for the PrPlanIT / HomeLabHD fleet. It is the one place that owns three things every managed repo would otherwise duplicate and drift on:
-
-- **Identity** — who owns a repo (`orgs:`) and how it presents itself (`metadata:` — title, description, topics, license).
-- **Policy** — the shared CI lifecycle (`preset/` fragments: build, lint, security, release, scribe, …).
-- **Catalog** — the inventory of governed repos, each anchored on its forge location.
-
-When this repo's pipeline runs, `stagefreight governance reconcile` resolves those presets, stamps each governed repo's identity, and commits the managed config back into the satellite — so a fleet-wide change is one commit here, not *N* commits everywhere.
 
 ## How it works
 
@@ -69,4 +56,4 @@ Which files are governed, and how, is declared by policy — never hardcoded by 
 
 ---
 
-<p align="center"><sub>Part of the <strong>PrPlanIT</strong> fleet · governed by <a href="https://gitlab.prplanit.com/PrPlanIT/StageFreight">StageFreight</a> · maintained at <a href="https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy">gitlab.prplanit.com</a></sub></p>
+Part of the **PrPlanIT** fleet · governed by [StageFreight](https://gitlab.prplanit.com/PrPlanIT/StageFreight)
