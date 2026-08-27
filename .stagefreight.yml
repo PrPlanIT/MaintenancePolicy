@@ -36,7 +36,7 @@ orgs:
     aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit, ghcr: prplanit }
   HomeLabHD:
     maintainer: "HomeLabHD <homelabhelp@gmail.com>"
-    aliases: { handle: hlhd, github: HomeLabHD, docker: prplanit, ghcr: homelabhd }
+    aliases: { handle: hlhd, github: HomeLabHD, docker: hlhd, ghcr: hlhd }
   SoFMeRight:
     maintainer: "SoFMeRight <sofmeright@gmail.com>"
     aliases: { handle: sofmeright, github: SoFMeRight, docker: sofmeright, ghcr: sofmeright }
@@ -96,7 +96,7 @@ governance:
         orgs:
           HomeLabHD:
             maintainer: "HomeLabHD <homelabhelp@gmail.com>"
-            aliases: { handle: hlhd, github: HomeLabHD, docker: prplanit, ghcr: homelabhd }
+            aliases: { handle: hlhd, github: HomeLabHD, docker: hlhd, ghcr: hlhd }
         git: { preset: "preset/git.yml" }
         builds: { preset: "preset/build-docker.yml" }
         forges: { preset: "preset/forges.yml" }
