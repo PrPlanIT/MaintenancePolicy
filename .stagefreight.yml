@@ -25,19 +25,21 @@ forges:
     provider: github
     url: "https://github.com"
     credentials: GITHUB
-    default_path: "{org}/{repo}"
+    default_path: "{org.github}/{repo}"
 
 # ── orgs = identity only (maintainer + aliases). No forge, no credentials. ──
 orgs:
+  # aliases carry the per-surface org names ({org.<surface>} facts) so shared presets
+  # need no {var:} — HomeLabHD repos publish under the prplanit/PrPlanIT namespaces.
   PrPlanIT:
     maintainer: "PrPlanIT <precisionplanit@gmail.com>"
-    aliases: { handle: prplanit }
+    aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit }
   HomeLabHD:
     maintainer: "HomeLabHD <homelabhelp@gmail.com>"
-    aliases: { handle: hlhd }
+    aliases: { handle: hlhd, github: PrPlanIT, docker: prplanit }
   SoFMeRight:
     maintainer: "SoFMeRight <sofmeright@gmail.com>"
-    aliases: { handle: sofmeright }
+    aliases: { handle: sofmeright, github: SoFMeRight, docker: sofmeright }
 
 # ── MaintenancePolicy's OWN first-class identity (it is a repo too). ──
 metadata:
@@ -94,7 +96,7 @@ governance:
         orgs:
           HomeLabHD:
             maintainer: "HomeLabHD <homelabhelp@gmail.com>"
-            aliases: { handle: hlhd }
+            aliases: { handle: hlhd, github: PrPlanIT, docker: prplanit }
         # Per-surface org vars the shared presets consume. This profile = HomeLabHD
         # forks, which publish under the prplanit/PrPlanIT namespaces but live in the
         # HomeLabHD gitlab group. The per-repo vars (repo/github_repo/license) are
@@ -117,8 +119,8 @@ governance:
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
         toolchains: { preset: "preset/toolchains.yml" }
-        stencils: { preset: "preset/stencils-docker.yml" }
-        scribe: { preset: "preset/scribe.yml" }
+        stencils: { presets: ["preset/stencils-core.yml", "preset/stencils-docker.yml"] }
+        scribe: { preset: "preset/scribe-docker.yml" }
 
       # WHO — the catalog. A BRANDED entry: governance distributes this repo's identity
       # (title/description/topics/license) as its metadata: block, on top of the CI policy.
@@ -135,71 +137,8 @@ governance:
           license: MIT
           category: monitoring
 
-# ──────────────────────────────────────────────────────────────────────
-# The control repo's OWN badge library. Coordinates come from facts, not literals:
-# {metadata.license} from the metadata: block, {path.<forge>} from each forge's
-# default_path — the same derivation the catalog gives satellites, dogfooded here.
-# ──────────────────────────────────────────────────────────────────────
-stencils:
-  # ── row 1 · identity + freshness (rendered SVGs) ──
-  license:
-    label: license
-    message: "{metadata.license}"
-    color: "#310937"
-    font: monofur
-    link: LICENSE
-  updated:
-    label: updated
-    message: "{commit.date}"
-    color: "#236144"
-    font: dejavu-sans
-    font_size: 11
-  stagefreight:
-    render: shield
-    label: governed by
-    message: StageFreight
-    color: "#310937"
-    logo: readthedocs
-    logo_color: white
-    link: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
-
-  # ── row 2 · source + activity (shields + github producers) ──
-  gitlab:
-    render: shield
-    label: GitLab
-    message: source
-    color: "#FC6D26"
-    logo: gitlab
-    link: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
-  github:
-    render: shield
-    label: GitHub
-    message: mirror
-    color: "#181717"
-    logo: github
-    link: "https://github.com/PrPlanIT/MaintenancePolicy"
-  last-commit:  { type: github-last-commit }
-  contributors: { type: github-contributors }
-
-# The control repo narrates ITSELF: publish (which owns forge mutation, all modes)
-# runs scribe, renders these badges into README.md, and commits + mirrors them.
-scribe:
-  files:
-    readme.badges:
-      file: README.md
-      between: ["<!-- sf:badges:start -->", "<!-- sf:badges:end -->"]
-      inline: true
-      items: [license, updated, stagefreight]
-    readme.project:
-      file: README.md
-      between: ["<!-- sf:project:start -->", "<!-- sf:project:end -->"]
-      inline: true
-      items: [gitlab, github, last-commit, contributors]
-  commit:
-    type: docs
-    message: "refresh generated badges"
-    add:
-      - README.md
-      - ".stagefreight/scribe"
-    push: true
-    skip_ci: true
+# ── badges: the control repo dogfoods the SAME shared preset library it ships. The
+# standard rows come from the presets (no inline stencils); MP is neither Go nor a
+# container, so it takes the plain-app scribe rows. publish (all modes) renders them. ──
+stencils: { preset: "preset/stencils-core.yml" }
+scribe:   { preset: "preset/scribe-app.yml" }
