@@ -1,4 +1,6 @@
-# Go add-on stencil — compose after stencils-core.yml for a Go repo.
-# The Go version reads from the repo's go.mod; no coordinates needed.
+# Go add-on stencils — compose after stencils-core.yml for a Go repo.
+# Both are native producers that resolve from the repo itself (go.mod / module path),
+# so a Go repo needs no coordinates beyond declaring this preset.
 stencils:
-  go-version: { type: go-version }
+  go-version:   { type: go-version }
+  go-reference: { type: go-reference }

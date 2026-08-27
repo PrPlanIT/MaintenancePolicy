@@ -83,7 +83,7 @@ publish:
 # ──────────────────────────────────────────────────────────────────────
 governance:
   profiles:
-    rebaseable-fork-docker:
+    hlhd-docker:
       # HomeLabHD-scoped token: write to the group + its protected branches.
       credentials: GITLAB_HOMELABHD
 
@@ -118,6 +118,158 @@ governance:
       # org + slug derive from the location; the description feeds registry overviews +
       # the forge About, the license the license badge, {path.*} its coordinates.
       repos:
+        ansible:
+          at: HomeLabHD/ansible
+          # A deviating entry: this image publishes a bill-of-materials into its docs —
+          # apk/pip/galaxy/binaries inventories rendered from the build manifest. The
+          # contents stencils name THIS build and the sections its manifest actually
+          # emits, so they cannot live in the shared library. A per-repo config: override
+          # replaces a whole top-level section (mergeConfigOverride is key-replace, not a
+          # deep merge), so each section restates the profile's preset and then adds only
+          # what is genuinely repo-specific.
+          config:
+            stencils:
+              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
+              contents-base:     { type: contents, build: ansible, section: inventories.versions, render: badges }
+              contents-apk:      { type: contents, build: ansible, section: inventories.apk, render: badges }
+              contents-pip:      { type: contents, build: ansible, section: inventories.pip, render: badges }
+              contents-galaxy:   { type: contents, build: ansible, section: inventories.galaxy, render: badges }
+              contents-binaries: { type: contents, build: ansible, section: inventories.binaries, render: badges }
+            scribe:
+              preset: "preset/scribe-docker.yml"
+              files:
+                readme.versions: { file: "README.md", between: ["<!-- sf:versions:start -->", "<!-- sf:versions:end -->"], items: [contents-base] }
+                readme.apk:      { file: "README.md", between: ["<!-- sf:apk:start -->", "<!-- sf:apk:end -->"], items: [contents-apk] }
+                readme.pip:      { file: "README.md", between: ["<!-- sf:pip:start -->", "<!-- sf:pip:end -->"], items: [contents-pip] }
+                readme.galaxy:   { file: "README.md", between: ["<!-- sf:galaxy:start -->", "<!-- sf:galaxy:end -->"], items: [contents-galaxy] }
+                readme.binaries: { file: "README.md", between: ["<!-- sf:binaries:start -->", "<!-- sf:binaries:end -->"], items: [contents-binaries] }
+                usage.tools:     { file: "docs/Usage.md", between: ["<!-- sf:usage-tools:start -->", "<!-- sf:usage-tools:end -->"], items: [contents-pip] }
+                usage.galaxy:    { file: "docs/Usage.md", between: ["<!-- sf:usage-galaxy:start -->", "<!-- sf:usage-galaxy:end -->"], items: [contents-galaxy] }
+              # restated because scribe writes a second file the preset does not know about
+              commit:
+                type: docs
+                message: "refresh generated docs and badges"
+                add: ["README.md", "docs/Usage.md", ".stagefreight/scribe"]
+          title: "Ansible"
+          description:
+            - "Container image for running Ansible playbooks in CI and local automation."
+            - "Lightweight Ansible image preloaded with common community collections, WinRM support for Windows nodes, and kubectl + kustomize for Kubernetes work — built for running playbooks in CI/CD pipelines and homelab automation."
+          topics: [ansible, automation, iac, ci, kubernetes, winrm]
+          # Upstream's license, kept as-is — matches org.opencontainers.image.licenses.
+          license: GPL-3.0
+          category: automation
+
+        apt-cacher-ng:
+          at: HomeLabHD/apt-cacher-ng
+          title: "APT Cacher NG"
+          description:
+            - "Caching proxy for Debian and Ubuntu package downloads."
+            - "Rootless apt-cacher-ng container that caches APT package downloads to cut bandwidth and speed up repeat installs across CI pipelines and homelab networks, with container log streaming, runtime tuning, init-managed volume ownership, and an HTTP health check."
+          topics: [apt, apt-cacher-ng, caching-proxy, debian, ubuntu, homelab, ci]
+          # Upstream's license, kept as-is: apt-cacher-ng is BSD-4-Clause (Eduard Bloch),
+          # matching org.opencontainers.image.licenses in the Dockerfile.
+          license: BSD-4-Clause
+          category: infrastructure
+
+        ark-se-server:
+          at: HomeLabHD/ark-se-server
+          # Deviating: it renders a base-image inventory into its README.
+          # OPEN — default branch is `master` while the publish preset gates on `main`,
+          # so publish will not fire until that branch is flipped. Not worked around
+          # here: overriding publish: would replace the whole section wholesale.
+          config:
+            stencils:
+              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
+              contents-base: { type: contents, build: ark-se-server, section: inventories.versions, render: badges }
+            scribe:
+              preset: "preset/scribe-docker.yml"
+              files:
+                readme.contents.base: { file: "README.md", between: ["<!-- sf:contents-base:start -->", "<!-- sf:contents-base:end -->"], items: [contents-base] }
+          title: "ARK: Survival Evolved Server"
+          description:
+            - "Dedicated server image for ARK: Survival Evolved, for single instances and clusters."
+            - "Container image running an ARK: Survival Evolved dedicated server, supporting both standalone instances and multi-server clusters, built on the SteamCMD base image."
+          topics: [ark, game-server, steamcmd, dedicated-server, gaming]
+          # Upstream's license, kept as-is: forked from SickHub/arkserver (MIT).
+          license: MIT
+          category: games
+
+        echoip:
+          at: HomeLabHD/echoip
+          # Deviating: a Go container repo, so it composes the Go stencils on top of the
+          # profile's docker set, swaps in the Go+docker scribe rows, and runs `go test`.
+          # The profile itself stays language-neutral.
+          config:
+            stencils:
+              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"]
+            scribe: { preset: "preset/scribe-go-docker.yml" }
+            test: { preset: "preset/test-go.yml" }
+          title: "echoip"
+          description:
+            - "Self-hosted service for looking up your own public IP address."
+            - "Container image for echoip, a small IP-address lookup service that reports the caller's public address and geolocation over plain HTTP or JSON, suitable for self-hosting behind a reverse proxy."
+          topics: [ip, geoip, lookup, networking, self-hosted]
+          # Upstream's license, kept as-is: echoip is BSD-3-Clause (Martin Polden).
+          license: BSD-3-Clause
+          category: networking
+
+        nginx-extras:
+          at: HomeLabHD/nginx-extras
+          title: "NGINX Extras"
+          description:
+            - "NGINX on Alpine with the extras module set compiled in."
+            - "Alpine-based NGINX image with dynamic modules for headers-more, brotli, geoip2, and echo, plus a private health endpoint, Cloudflare real-client-IP refresh at startup, and strict TLS defaults with HSTS enabled."
+          topics: [nginx, alpine, reverse-proxy, brotli, geoip2, tls]
+          # Upstream's license, kept as-is — matches org.opencontainers.image.licenses.
+          license: GPL-3.0
+          category: infrastructure
+
+        steamcmd:
+          at: HomeLabHD/SteamCMD
+          title: "SteamCMD"
+          description:
+            - "SteamCMD base image for building game-server containers."
+            - "Debian-slim SteamCMD base image with glibc and i386 multiarch support for game-server containers, kept to a minimal CVE surface as a foundation for dedicated-server images."
+          topics: [steamcmd, game-server, steam, base-image, debian]
+          license: MIT
+          category: games
+
+        sm-lickitung-gen:
+          at: HomeLabHD/sm-lickitung-gen
+          # Deliberately non-specific: this metadata is pushed to Docker Hub and the
+          # forge About panel, i.e. it is indexed and searchable. Every statement is
+          # true, none of it advertises what the tool computes.
+          title: "SM Lickitung Gen"
+          description:
+            - "Static single-page utility served from a minimal nginx container."
+            - "Minimal nginx container serving a self-contained HTML+JS utility for out-of-production server baseboard-management hardware. Non-commercial, educational and research use only."
+          topics: [static-site, nginx, homelab, utility]
+          license: MIT
+          category: utilities
+
+        osticket:
+          at: HomeLabHD/osticket
+          # Deviating for the same reason as ansible, at smaller scale: it renders its
+          # base-image and apk inventories into the README.
+          config:
+            stencils:
+              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
+              contents-base: { type: contents, build: osticket, section: inventories.versions, render: badges }
+              contents-apk:  { type: contents, build: osticket, section: inventories.apk, render: badges }
+            scribe:
+              preset: "preset/scribe-docker.yml"
+              files:
+                readme.contents.base: { file: "README.md", between: ["<!-- sf:contents-base:start -->", "<!-- sf:contents-base:end -->"], items: [contents-base] }
+                readme.contents.apk:  { file: "README.md", between: ["<!-- sf:contents-apk:start -->", "<!-- sf:contents-apk:end -->"], items: [contents-apk] }
+          title: "osTicket"
+          description:
+            - "Rootless container image for osTicket, the open-source support ticketing system."
+            - "Rootless osTicket image running nginx and php-fpm under a minimal tini init on stock php:8.3-fpm-alpine — runs as uid 1000 and under arbitrary UIDs for hardened clusters, bundles the official and community plugin sets, and leaves cron to a separate scheduled job."
+          topics: [osticket, ticketing, helpdesk, support, php, nginx, rootless]
+          # Upstream's license, kept as-is: osTicket is GPL-2.0.
+          license: GPL-2.0
+          category: applications
+
         prometheus-eaton-ups-exporter:
           at: HomeLabHD/prometheus-eaton-ups-exporter
           # A deviating entry: this repo is Python, so it overrides the profile's
@@ -129,7 +281,7 @@ governance:
             - "Prometheus exporter for Eaton UPS devices via the Eaton REST API."
             - "Rootless container exporting Eaton UPS load, runtime, battery, and I/O metrics to Prometheus, scraped over the UPS web API."
           topics: [prometheus, exporter, ups, eaton, monitoring]
-          license: MIT
+          license: ISC
           category: monitoring
 
 # ── badges: the control repo dogfoods the SAME shared preset library it ships. The

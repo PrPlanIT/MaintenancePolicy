@@ -10,7 +10,7 @@ scribe:
       file: README.md
       between: ["<!-- sf:badges:start -->", "<!-- sf:badges:end -->"]
       inline: true
-      items: [release, build, go-version, last-commit, stagefreight]
+      items: [release, build, go-version, go-reference, last-commit, stagefreight]
     readme.image:
       file: README.md
       between: ["<!-- sf:image:start -->", "<!-- sf:image:end -->"]
