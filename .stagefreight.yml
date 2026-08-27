@@ -170,14 +170,14 @@ stencils:
     message: source
     color: "#FC6D26"
     logo: gitlab
-    link: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+    link: "https://gitlab.prplanit.com/{path.gitlab}"
   github:
     render: shield
     label: GitHub
     message: mirror
     color: "#181717"
     logo: github
-    link: "https://github.com/PrPlanIT/MaintenancePolicy"
+    link: "https://github.com/{path.github}"
   last-commit:  { type: github-last-commit }
   contributors: { type: github-contributors }
 
