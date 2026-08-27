@@ -92,6 +92,11 @@ governance:
       config:
         version: 1
         ci:
+          # Which forge's CI skeleton governance renders and distributes alongside the
+          # config. Declared, never inferred: .gitlab-ci.yml is DERIVED from
+          # .stagefreight.yml, so distributing the config without it leaves every
+          # satellite self-inconsistent and audition rejects the run as stale CI.
+          forge: [gitlab]
           image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
         orgs:
           HomeLabHD:
