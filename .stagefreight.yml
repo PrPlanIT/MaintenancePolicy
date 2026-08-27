@@ -9,12 +9,22 @@ ci:
 lifecycle:
   mode: governance
 
-# ── surfaces: MaintenancePolicy's own forge. default_path lets {path.<id>} derive. ──
+# Named branch matchers referenced by publish/scribe when: gates.
+git:
+  branches:
+    main: "^main$"
+
+# ── surfaces: MaintenancePolicy's forges. default_path lets {path.<id>} derive. ──
 forges:
   gitlab:
     provider: gitlab
     url: "https://gitlab.prplanit.com"
     credentials: GITLAB
+    default_path: "{org}/{repo}"
+  github:
+    provider: github
+    url: "https://github.com"
+    credentials: GITHUB
     default_path: "{org}/{repo}"
 
 # ── orgs = identity only (maintainer + aliases). No forge, no credentials. ──
@@ -47,6 +57,23 @@ repos:
     branches:
       default: main
     worktree: "."
+  # GitHub mirror: the public face of the control repo. Carries the same README +
+  # badges (mirror role → syncMirrors pushes content) and receives the identity push
+  # (description/topics) from the project-meta target below.
+  github:
+    forge: github
+    project: "PrPlanIT/MaintenancePolicy"
+    roles: [mirror, publish-origin]   # publish-origin: the github-* badge producers (last-commit, contributors) resolve here
+
+# ── project identity push: sync the metadata: block to both forges' About panels ──
+# The control repo is a repo too; publish syncs its own title/description/topics to
+# GitLab and GitHub. Identity comes from the metadata: block above (no fields inline)
+# — the target says only WHERE to push. Runs in publish (which owns forge mutation).
+publish:
+  project-meta:
+    kind: metadata
+    repos: [primary, github]
+    when: { branches: [main], events: [push] }
 
 # ──────────────────────────────────────────────────────────────────────
 # Governance: presence-gated (no lifecycle.mode). One profile, one repo (proof).
@@ -99,3 +126,72 @@ governance:
           topics: [prometheus, exporter, ups, eaton, monitoring, snmp]
           license: MIT
           category: monitoring
+
+# ──────────────────────────────────────────────────────────────────────
+# The control repo's OWN badge library. Coordinates come from facts, not literals:
+# {metadata.license} from the metadata: block, {path.<forge>} from each forge's
+# default_path — the same derivation the catalog gives satellites, dogfooded here.
+# ──────────────────────────────────────────────────────────────────────
+stencils:
+  # ── row 1 · identity + freshness (rendered SVGs) ──
+  license:
+    label: license
+    message: "{metadata.license}"
+    color: "#310937"
+    font: monofur
+    link: LICENSE
+  updated:
+    label: updated
+    message: "{commit.date}"
+    color: "#236144"
+    font: dejavu-sans
+    font_size: 11
+  stagefreight:
+    render: shield
+    label: governed by
+    message: StageFreight
+    color: "#310937"
+    logo: readthedocs
+    logo_color: white
+    link: "https://gitlab.prplanit.com/PrPlanIT/StageFreight"
+
+  # ── row 2 · source + activity (shields + github producers) ──
+  gitlab:
+    render: shield
+    label: GitLab
+    message: source
+    color: "#FC6D26"
+    logo: gitlab
+    link: "https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy"
+  github:
+    render: shield
+    label: GitHub
+    message: mirror
+    color: "#181717"
+    logo: github
+    link: "https://github.com/PrPlanIT/MaintenancePolicy"
+  last-commit:  { type: github-last-commit }
+  contributors: { type: github-contributors }
+
+# The control repo narrates ITSELF: publish (which owns forge mutation, all modes)
+# runs scribe, renders these badges into README.md, and commits + mirrors them.
+scribe:
+  files:
+    readme.badges:
+      file: README.md
+      between: ["<!-- sf:badges:start -->", "<!-- sf:badges:end -->"]
+      inline: true
+      items: [license, updated, stagefreight]
+    readme.project:
+      file: README.md
+      between: ["<!-- sf:project:start -->", "<!-- sf:project:end -->"]
+      inline: true
+      items: [gitlab, github, last-commit, contributors]
+  commit:
+    type: docs
+    message: "refresh generated badges"
+    add:
+      - README.md
+      - ".stagefreight/scribe"
+    push: true
+    skip_ci: true
