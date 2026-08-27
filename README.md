@@ -10,7 +10,7 @@
 
 <p align="center">
 <!-- sf:project:start -->
-[![GitLab](https://img.shields.io/badge/GitLab-source-FC6D26?logo=gitlab)](https://gitlab.prplanit.com/PrPlanIT/MaintenancePolicy) [![GitHub](https://img.shields.io/badge/GitHub-mirror-181717?logo=github)](https://github.com/PrPlanIT/MaintenancePolicy) [![Last Commit](https://img.shields.io/github/last-commit/PrPlanIT/MaintenancePolicy)](https://github.com/PrPlanIT/MaintenancePolicy/commits) [![Contributors](https://img.shields.io/github/contributors/PrPlanIT/MaintenancePolicy)](https://github.com/PrPlanIT/MaintenancePolicy/graphs/contributors)
+[![GitLab](https://img.shields.io/badge/GitLab-source-FC6D26?logo=gitlab)](https://gitlab.prplanit.com/{path.gitlab}) [![GitHub](https://img.shields.io/badge/GitHub-mirror-181717?logo=github)](https://github.com/{path.github}) [![Last Commit](https://img.shields.io/github/last-commit/PrPlanIT/MaintenancePolicy)](https://github.com/PrPlanIT/MaintenancePolicy/commits) [![Contributors](https://img.shields.io/github/contributors/PrPlanIT/MaintenancePolicy)](https://github.com/PrPlanIT/MaintenancePolicy/graphs/contributors)
 <!-- sf:project:end -->
 </p>
 
