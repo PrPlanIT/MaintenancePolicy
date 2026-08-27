@@ -3,15 +3,41 @@ version: 1
 ci:
   image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
 
+# The control repo runs in governance mode: its own pipeline reconciles the profiles
+# below into their satellites (rather than building an image). Governance activation is
+# presence-gated on governance.profiles; the mode selects THIS repo's phase behavior.
 lifecycle:
   mode: governance
 
-# MaintenancePolicy's own forge identity (it is itself a StageFreight repo).
+# ── surfaces: MaintenancePolicy's own forge. default_path lets {path.<id>} derive. ──
 forges:
   gitlab:
     provider: gitlab
     url: "https://gitlab.prplanit.com"
     credentials: GITLAB
+    default_path: "{org}/{repo}"
+
+# ── orgs = identity only (maintainer + aliases). No forge, no credentials. ──
+orgs:
+  PrPlanIT:
+    maintainer: "PrPlanIT <precisionplanit@gmail.com>"
+    aliases: { handle: prplanit }
+  HomeLabHD:
+    maintainer: "HomeLabHD <homelabhelp@gmail.com>"
+    aliases: { handle: hlhd }
+  SoFMeRight:
+    maintainer: "SoFMeRight <sofmeright@gmail.com>"
+    aliases: { handle: sofmeright }
+
+# ── MaintenancePolicy's OWN first-class identity (it is a repo too). ──
+metadata:
+  org: PrPlanIT
+  title: "Maintenance Policy"
+  description:
+    - "Central maintenance policy + catalog for PrPlanIT / HomeLabHD repos."
+    - "The StageFreight governance control repo: one place that owns org identity, per-repo branding, and shared lifecycle policy, reconciled into satellite repos."
+  topics: [governance, stagefreight, catalog]
+  license: MIT
 
 repos:
   primary:
@@ -23,52 +49,53 @@ repos:
     worktree: "."
 
 # ──────────────────────────────────────────────────────────────────────
-# PROOF: one bucket, one non-crucial repo. Prove reconcile writes the
-# expected managed config before expanding the bucket / touching crucial repos.
+# Governance: presence-gated (no lifecycle.mode). One profile, one repo (proof).
+# A BRANDED catalog entry → governance distributes CI policy AND identity.
 # ──────────────────────────────────────────────────────────────────────
 governance:
-  clusters:
-    - id: rebaseable-fork-docker
-      targets:
-        # HomeLabHD-scoped token (has write to the group + its protected branches).
-        # reconcile auths with GITLAB_HOMELABHD_TOKEN instead of the default GITLAB_*.
-        credentials: GITLAB_HOMELABHD
-        repos:
-          - "HomeLabHD/prometheus-eaton-ups-exporter"
-      stagefreight:
+  profiles:
+    rebaseable-fork-docker:
+      # HomeLabHD-scoped token: write to the group + its protected branches.
+      credentials: GITLAB_HOMELABHD
+
+      # WHAT — shared config distributed to every repo in this profile. Carries the
+      # orgs block so each governed repo resolves {org.*}/{path.*} for its own identity.
+      config:
         version: 1
         ci:
           image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
-        # Reconciled fork policy: default branch = main, no_lineage = explicit.
-        git:
-          preset: "preset/git.yml"
-        builds:
-          preset: "preset/build-docker.yml" # generic build id 'image' (no per-repo name)
-        forges:
-          preset: "preset/forges.yml"
-        repos:
-          preset: "preset/repos.yml"
-        registries:
-          preset: "preset/registries.yml"
-        publish:
-          preset: "preset/publish-docker.yml"
-        build_cache:
-          preset: "preset/build_cache.yml"
-        dependency:
-          preset: "preset/dependency.yml"
-        commit:
-          preset: "preset/commit.yml"
-        lint:
-          preset: "preset/lint-generic.yml"
-        manifest:
-          preset: "preset/manifest.yml"
-        release:
-          preset: "preset/release.yml"
-        security:
-          preset: "preset/security.yml"
-        toolchains:
-          preset: "preset/toolchains.yml"
-        stencils:
-          preset: "preset/stencils-docker.yml"
-        scribe:
-          preset: "preset/scribe.yml"
+        orgs:
+          HomeLabHD:
+            maintainer: "HomeLabHD <homelabhelp@gmail.com>"
+            aliases: { handle: hlhd }
+        git: { preset: "preset/git.yml" }
+        builds: { preset: "preset/build-docker.yml" }
+        forges: { preset: "preset/forges.yml" }
+        repos: { preset: "preset/repos.yml" }
+        registries: { preset: "preset/registries.yml" }
+        publish: { preset: "preset/publish-docker.yml" }
+        build_cache: { preset: "preset/build_cache.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-generic.yml" }
+        manifest: { preset: "preset/manifest.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        stencils: { preset: "preset/stencils-docker.yml" }
+        scribe: { preset: "preset/scribe.yml" }
+
+      # WHO — the catalog. A BRANDED entry: governance distributes this repo's identity
+      # (title/description/topics/license) as its metadata: block, on top of the CI policy.
+      # org + slug derive from the location; the description feeds registry overviews +
+      # the forge About, the license the license badge, {path.*} its coordinates.
+      repos:
+        prometheus-eaton-ups-exporter:
+          at: HomeLabHD/prometheus-eaton-ups-exporter
+          title: "Eaton UPS Exporter"
+          description:
+            - "Prometheus exporter for Eaton UPS devices over SNMP/HTTP."
+            - "Rootless container exporting Eaton UPS load, runtime, battery, and I/O metrics to Prometheus."
+          topics: [prometheus, exporter, ups, eaton, monitoring, snmp]
+          license: MIT
+          category: monitoring
