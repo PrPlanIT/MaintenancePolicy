@@ -33,13 +33,13 @@ orgs:
   # need no {var:} — HomeLabHD repos publish under the prplanit/PrPlanIT namespaces.
   PrPlanIT:
     maintainer: "PrPlanIT <precisionplanit@gmail.com>"
-    aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit }
+    aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit, ghcr: prplanit }
   HomeLabHD:
     maintainer: "HomeLabHD <homelabhelp@gmail.com>"
-    aliases: { handle: hlhd, github: PrPlanIT, docker: prplanit }
+    aliases: { handle: hlhd, github: PrPlanIT, docker: prplanit, ghcr: homelabhd }
   SoFMeRight:
     maintainer: "SoFMeRight <sofmeright@gmail.com>"
-    aliases: { handle: sofmeright, github: SoFMeRight, docker: sofmeright }
+    aliases: { handle: sofmeright, github: SoFMeRight, docker: sofmeright, ghcr: sofmeright }
 
 # ── MaintenancePolicy's OWN first-class identity (it is a repo too). ──
 metadata:
@@ -96,19 +96,10 @@ governance:
         orgs:
           HomeLabHD:
             maintainer: "HomeLabHD <homelabhelp@gmail.com>"
-            aliases: { handle: hlhd, github: PrPlanIT, docker: prplanit }
-        # Per-surface org vars the shared presets consume. This profile = HomeLabHD
-        # forks, which publish under the prplanit/PrPlanIT namespaces but live in the
-        # HomeLabHD gitlab group. The per-repo vars (repo/github_repo/license) are
-        # injected by the distributor from each catalog entry's location + branding.
-        vars:
-          org: prplanit
-          github_org: PrPlanIT
-          gitlab_group: HomeLabHD
+            aliases: { handle: hlhd, github: PrPlanIT, docker: prplanit, ghcr: homelabhd }
         git: { preset: "preset/git.yml" }
         builds: { preset: "preset/build-docker.yml" }
         forges: { preset: "preset/forges.yml" }
-        repos: { preset: "preset/repos.yml" }
         registries: { preset: "preset/registries.yml" }
         publish: { preset: "preset/publish-docker.yml" }
         build_cache: { preset: "preset/build_cache.yml" }

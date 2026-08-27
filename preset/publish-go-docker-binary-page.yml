@@ -124,7 +124,7 @@ publish:                                 # distribute artifacts to their destina
   docs-github:
     kind: pages
     provider: github
-    project_id: "{var:github_org}/{var:github_repo}"
+    project_id: "{org.github}/{slug}"
     credentials: GITHUB
     build: docs-site
     when: { git_tags: [stable], events: [tag] }
