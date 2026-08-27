@@ -95,6 +95,14 @@ governance:
           HomeLabHD:
             maintainer: "HomeLabHD <homelabhelp@gmail.com>"
             aliases: { handle: hlhd }
+        # Per-surface org vars the shared presets consume. This profile = HomeLabHD
+        # forks, which publish under the prplanit/PrPlanIT namespaces but live in the
+        # HomeLabHD gitlab group. The per-repo vars (repo/github_repo/license) are
+        # injected by the distributor from each catalog entry's location + branding.
+        vars:
+          org: prplanit
+          github_org: PrPlanIT
+          gitlab_group: HomeLabHD
         git: { preset: "preset/git.yml" }
         builds: { preset: "preset/build-docker.yml" }
         forges: { preset: "preset/forges.yml" }
