@@ -320,6 +320,77 @@ governance:
           license: AGPL-3.0
           category: applications
 
+    # A THIRD profile, sibling to prplanit-docker and on the same PrPlanIT token: these
+    # repos build an image AND deploy a Cloudflare Pages site, which prplanit-docker has
+    # no target for. Nothing here is cross-org -- the site names are repo names, and both
+    # repos are PrPlanIT end to end. The split is policy, not identity.
+    prplanit-sites:
+      credentials: GITLAB
+
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        orgs:
+          PrPlanIT:
+            maintainer: "PrPlanIT <precisionplanit@gmail.com>"
+            aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit, ghcr: prplanit }
+        git: { preset: "preset/git.yml" }
+        builds: { preset: "preset/build-docker.yml" }
+        forges: { preset: "preset/forges.yml" }
+        registries: { preset: "preset/registries.yml" }
+        publish: { preset: "preset/publish-docker-pages.yml" }
+        build_cache: { preset: "preset/build_cache.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-generic.yml" }
+        manifest: { preset: "preset/manifest.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
+        scribe: { preset: "preset/scribe-docker.yml" }
+
+      repos:
+        precisionplanit.com:
+          at: PrPlanIT/precisionplanit.com
+          # project and domain are the only per-site facts; the rest of the pages target
+          # comes from the preset. This one answers on a second apex as well.
+          config:
+            publish:
+              # A config: override REPLACES the whole section (key-replace, not a deep
+              # merge), so the preset must be restated here or every registry target and
+              # the pages target's own kind/provider/dir vanish with it. The pages map
+              # then deep-merges, adding only the two per-site facts.
+              preset: "preset/publish-docker-pages.yml"
+              pages:
+                project: precisionplanit
+                domain: [precisionplanit.com, prplanit.com]
+          title: "precisionplanit.com"
+          description:
+            - "Company site for PrecisionPlanIT, built as an image and deployed to Cloudflare Pages."
+            - "Static site for precisionplanit.com, also serving prplanit.com, built into a container image and deployed to Cloudflare Pages on every main push."
+          topics: [website, static-site, cloudflare-pages, docker]
+          license: MIT
+          category: websites
+
+        homelabhelpdesk.com:
+          at: PrPlanIT/homelabhelpdesk.com
+          config:
+            publish:
+              preset: "preset/publish-docker-pages.yml"
+              pages:
+                project: homelabhelpdesk
+                domain: homelabhelpdesk.com
+          title: "homelabhelpdesk.com"
+          description:
+            - "Site for HomeLab Helpdesk, built as an image and deployed to Cloudflare Pages."
+            - "Static site for homelabhelpdesk.com, built into a container image and deployed to Cloudflare Pages on every main push."
+          topics: [website, static-site, cloudflare-pages, docker]
+          license: MIT
+          category: websites
+
 # ── badges: the control repo dogfoods the SAME shared preset library it ships. The
 # standard rows come from the presets (no inline stencils); MP is neither Go nor a
 # container, so it takes the plain-app scribe rows. publish (all modes) renders them. ──
