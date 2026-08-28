@@ -59,10 +59,18 @@ publish:
     retention:
       keep_last: 2
 
-  # The site itself. Deployed on every main push, unlike the image releases which are
-  # tag-gated: a content edit should reach the site without cutting a version.
+  # The site itself, deployed on a stable TAG -- not on every main push.
+  #
+  # A Cloudflare Pages deploy is a metered, externally visible action. Firing it per
+  # commit spends the account's deploy budget on work-in-progress and publishes every
+  # intermediate state of the site to the public, so a half-finished edit is live until
+  # the next push. Eight site repos pushing to main all day share one budget.
+  #
+  # Tag-gating makes a release the thing that reaches visitors, which is what the image
+  # targets beside it already do -- StageFreight's own docs target is gated the same way
+  # and for the same reason.
   pages:
     kind: pages
     provider: cloudflare
     dir: ./www-data
-    when: { branches: [main], events: [push] }
+    when: { git_tags: [stable], events: [tag] }

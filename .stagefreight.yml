@@ -406,7 +406,10 @@ governance:
         security: { preset: "preset/security.yml" }
         toolchains: { preset: "preset/toolchains.yml" }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
-        scribe: { preset: "preset/scribe-docker.yml" }
+        # scribe-site, not scribe-docker: a site's image goes to harbor + ghcr only, so
+        # the docker/pulls badges would report a pull count for a repository nothing was
+        # ever pushed to.
+        scribe: { preset: "preset/scribe-site.yml" }
 
       repos:
         precisionplanit.com:
@@ -667,7 +670,7 @@ governance:
         security: { preset: "preset/security.yml" }
         toolchains: { preset: "preset/toolchains.yml" }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
-        scribe: { preset: "preset/scribe-docker.yml" }
+        scribe: { preset: "preset/scribe-site.yml" }
 
       repos:
         kai-hamilton.com:

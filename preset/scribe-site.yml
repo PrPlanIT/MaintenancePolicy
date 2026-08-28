@@ -1,0 +1,39 @@
+# Scribe rows for a SITE repo: identical to scribe-docker except the image row carries
+# no Docker Hub badges.
+#
+# A site's image goes to harbor + ghcr only (publish-docker-pages.yml), so a `docker` or
+# `pulls` badge would render a pull count for a repository that was never pushed there --
+# a badge that is not merely useless but actively wrong, since it reads as zero adoption
+# rather than as absent.
+scribe:
+  files:
+    readme.project:
+      file: README.md
+      between: ["<!-- sf:project:start -->", "<!-- sf:project:end -->"]
+      inline: true
+      items: [repo-gh, repo-gl, license, issues, prs, contributors, donate, sponsor]
+    readme.badges:
+      file: README.md
+      between: ["<!-- sf:badges:start -->", "<!-- sf:badges:end -->"]
+      inline: true
+      items: [release, build, last-commit, stagefreight]
+    readme.image:
+      file: README.md
+      between: ["<!-- sf:image:start -->", "<!-- sf:image:end -->"]
+      items: [ghcr, harbor, br, release-latest, release-updated, release-size, dev-latest, dev-updated, dev-size]
+    readme.contents.base:
+      file: README.md
+      between: ["<!-- sf:contents-base:start -->", "<!-- sf:contents-base:end -->"]
+      items: [contents-base]
+    readme.contents.apk:
+      file: README.md
+      between: ["<!-- sf:contents-apk:start -->", "<!-- sf:contents-apk:end -->"]
+      items: [contents-apk]
+  commit:
+    type: docs
+    message: "refresh generated badges"
+    add:
+      - README.md
+      - ".stagefreight/scribe"
+    push: true
+    skip_ci: true
