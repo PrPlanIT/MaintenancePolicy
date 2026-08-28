@@ -320,6 +320,62 @@ governance:
           license: AGPL-3.0
           category: applications
 
+        istio-meshmedic:
+          at: PrPlanIT/istio-meshmedic
+          title: "Istio MeshMedic"
+          description:
+            - "Diagnoses and repairs Istio service-mesh configuration drift."
+            - "Operator-facing tool that inspects an Istio mesh for misconfiguration and policy drift, and reports or repairs what it finds."
+          topics: [istio, service-mesh, kubernetes, diagnostics]
+          license: MIT
+          category: infrastructure
+
+        oh-CI:
+          at: PrPlanIT/oh-CI
+          title: "oh-CI"
+          description:
+            - "CI helper image with the tooling a pipeline expects preinstalled."
+            - "Container image bundling the utilities CI jobs reach for, so pipelines stop installing the same tools on every run."
+          topics: [ci, docker, tooling]
+          license: MIT
+          category: infrastructure
+
+        static-site:
+          at: PrPlanIT/static-site
+          title: "Static Site"
+          description:
+            - "Base image for serving a static site from a container."
+            - "Minimal container image that serves a static site directory, used as the base for the .com site repos."
+          topics: [static-site, nginx, docker]
+          license: MIT
+          category: infrastructure
+
+        dd-ui:
+          at: PrPlanIT/dd-ui
+          # Deviating: it also publishes a per-branch Harbor image so a branch build can
+          # be pulled before merge. A config: override replaces the whole section, so the
+          # preset is restated and only the extra target added.
+          config:
+            publish:
+              preset: "preset/publish-docker.yml"
+              harbor-branch-dev:
+                kind: registry
+                registry: [harbor]
+                build: image
+                tags: ["test-{branch}-{sha:8}", "latest-test-{branch}"]
+                when: { branches: ["!main"], events: [push] }
+                retention:
+                  keep_last: 6
+                  keep_branches: 10
+            test: { preset: "preset/test-go.yml" }
+          title: "DD-UI"
+          description:
+            - "Web UI for managing Docker hosts and their compose stacks."
+            - "Browser interface over Docker and compose deployments, for inspecting and operating containers across hosts."
+          topics: [docker, ui, web, management]
+          license: MIT
+          category: applications
+
     # A THIRD profile, sibling to prplanit-docker and on the same PrPlanIT token: these
     # repos build an image AND deploy a Cloudflare Pages site, which prplanit-docker has
     # no target for. Nothing here is cross-org -- the site names are repo names, and both
@@ -390,6 +446,194 @@ governance:
           topics: [website, static-site, cloudflare-pages, docker]
           license: MIT
           category: websites
+
+    # Go repos that ship an image AND a CLI. Same PrPlanIT token; the split from
+    # prplanit-docker is the binary half -- archives, and releases that carry them.
+    prplanit-go:
+      credentials: GITLAB
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        orgs:
+          PrPlanIT:
+            maintainer: "PrPlanIT <precisionplanit@gmail.com>"
+            aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit, ghcr: prplanit }
+        git: { preset: "preset/git.yml" }
+        forges: { preset: "preset/forges.yml" }
+        registries: { preset: "preset/registries.yml" }
+        publish: { preset: "preset/publish-docker-binary.yml" }
+        build_cache: { preset: "preset/build_cache.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-flagships.yml" }
+        manifest: { preset: "preset/manifest.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        test: { preset: "preset/test-go.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"] }
+        scribe: { preset: "preset/scribe-go-docker.yml" }
+
+      repos:
+        PolySieve:
+          at: PrPlanIT/PolySieve
+          # builds are irreducibly per-repo: the ldflags carry this module's own version
+          # package path. The build IDs are standardised (image / bin) so the shared
+          # publish targets need no per-repo editing.
+          config:
+            builds:
+              preset: "preset/build-docker.yml"
+              bin:
+                kind: binary
+                builder: go
+                from: ./cmd/polysieve
+                output: polysieve
+                env: { CGO_ENABLED: "0" }
+                args: ["-ldflags", "-s -w -X github.com/PrPlanIT/PolySieve/internal/cli.version={version} -X github.com/PrPlanIT/PolySieve/internal/cli.commit={sha} -X github.com/PrPlanIT/PolySieve/internal/cli.buildDate={date}"]
+                platforms: [linux/amd64, linux/arm64]
+          title: "PolySieve"
+          description:
+            - "Generates Kubernetes network and security policies from live cluster state."
+            - "Reads what a cluster actually does and emits the network/security policies to match, so policy is derived from observed traffic rather than written by hand."
+          topics: [kubernetes, network-policy, security, cilium]
+          license: MIT
+          category: infrastructure
+
+        HASteward:
+          at: PrPlanIT/HASteward
+          # The richest entry here: besides the CLI it publishes a docs site to BOTH
+          # Cloudflare and GitHub Pages from a docs-site command build, and carries a
+          # `reference` build that generates its command reference. Nothing else does.
+          config:
+            builds:
+              preset: "preset/build-docker.yml"
+              bin:
+                kind: binary
+                builder: go
+                from: ./cmd/hasteward
+                output: hasteward
+                env: { CGO_ENABLED: "0" }
+                args: ["-ldflags", "-s -w -X github.com/PrPlanIT/HASteward/src/version.Version={version} -X github.com/PrPlanIT/HASteward/src/version.Commit={sha} -X github.com/PrPlanIT/HASteward/src/version.BuildDate={date}"]
+                platforms: [linux/amd64, linux/arm64]
+              # `reference` runs the built CLI to regenerate its own command reference
+              # into the worktree; docs-site then builds the mkdocs tree the pages
+              # targets deploy. Both are command builds, unique to this repo.
+              reference:
+                kind: command
+                stage: { from: bin, as: hasteward }
+                command: ["./hasteward", "docs", "generate", "--output-dir", "{output}"]
+                outputs:
+                  - { type: tree, source: docs/assets/modules, worktree: true }
+              docs-site:
+                kind: command
+                image: docker.io/library/python:3.12-slim
+                command: "pip install --quiet --root-user-action=ignore mkdocs-material && mkdocs build -f docs/assets/mkdocs/mkdocs.yml --strict --site-dir $(pwd)/site"
+                outputs:
+                  - { type: tree, source: site }
+            publish:
+              preset: "preset/publish-docker-binary.yml"
+              docs:
+                kind: pages
+                provider: cloudflare
+                project: hasteward
+                build: docs-site
+                domain: hasteward.prplanit.com
+                when: { git_tags: [stable], events: [tag] }
+              docs-github:
+                kind: pages
+                provider: github
+                project_id: "{org.github}/{slug}"
+                credentials: GITHUB
+                build: docs-site
+                when: { git_tags: [stable], events: [tag] }
+          title: "HASteward"
+          description:
+            - "Stateful-workload steward for Kubernetes: bootstraps, heals and migrates databases."
+            - "Operator-facing tool that bootstraps and repairs stateful workloads on Kubernetes -- Galera, CNPG and friends -- including triage and recovery of clusters that will not converge on their own."
+          topics: [kubernetes, databases, galera, cnpg, operations]
+          license: MIT
+          category: infrastructure
+
+    # Binary-only: same policy as prplanit-go, minus every registry target. No image is
+    # published here for now, so the repo ships archives and releases and nothing else.
+    prplanit-bin:
+      credentials: GITLAB
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        orgs:
+          PrPlanIT:
+            maintainer: "PrPlanIT <precisionplanit@gmail.com>"
+            aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit, ghcr: prplanit }
+        git: { preset: "preset/git.yml" }
+        forges: { preset: "preset/forges.yml" }
+        registries: { preset: "preset/registries.yml" }
+        publish: { preset: "preset/publish-binary.yml" }
+        build_cache: { preset: "preset/build_cache.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-flagships.yml" }
+        manifest: { preset: "preset/manifest.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-go.yml"] }
+        scribe: { preset: "preset/scribe-go.yml" }
+
+      repos:
+        DisplayWizard:
+          at: PrPlanIT/DisplayWizard
+          # Windows-only, and the desktop artifact is an Electron pack rather than a Go
+          # binary -- it depends on the Go build and is produced by a node builder in a
+          # wine image. The archive names are the product name, not the slug, so the
+          # publish section is restated with its own naming.
+          config:
+            builds:
+              dwiz:
+                kind: binary
+                builder: go
+                from: ./cmd/dwiz
+                output: dwiz
+                env: { CGO_ENABLED: "0" }
+                args: ["-ldflags", "-s -w -X github.com/PrPlanIT/DisplayWizard/src/version.Version={version} -X github.com/PrPlanIT/DisplayWizard/src/version.Commit={sha} -X github.com/PrPlanIT/DisplayWizard/src/version.BuildDate={date}"]
+                platforms: [windows/amd64]
+              bin:
+                kind: binary
+                builder: node
+                from: .
+                depends_on: dwiz
+                platforms: [windows/amd64]
+                image: electronuserland/builder:wine
+                output: ui/desktop/release/*.exe
+                command: "corepack enable && pnpm install --no-frozen-lockfile && pnpm -r build && mkdir -p ui/desktop/bin && cp .stagefreight/dist/windows-amd64/dwiz.exe ui/desktop/bin/dwiz.exe && pnpm -C ui/desktop run pack"
+            publish:
+              preset: "preset/publish-binary.yml"
+              binaries-dev:
+                kind: binary-archive
+                build: bin
+                name: "VDisplay-Wizard-latest-dev-{os}-{arch}"
+                format: auto
+                checksums: true
+                when: { branches: [main], events: [push, manual] }
+              binaries:
+                kind: binary-archive
+                build: bin
+                name: "VDisplay-Wizard-{version}-{os}-{arch}"
+                format: auto
+                checksums: true
+                include: ["README.md", "LICENSE"]
+                when: { git_tags: [stable], events: [tag] }
+          title: "Display Wizard"
+          description:
+            - "Windows desktop app for managing virtual displays."
+            - "Desktop utility for creating and arranging virtual displays on Windows, packaged as an Electron app over a Go core."
+          topics: [windows, desktop, displays, electron]
+          license: MIT
+          category: applications
 
 # ── badges: the control repo dogfoods the SAME shared preset library it ships. The
 # standard rows come from the presets (no inline stencils); MP is neither Go nor a
