@@ -635,6 +635,190 @@ governance:
           license: MIT
           category: applications
 
+    # SoFMeRight's static marketing sites. Same shape as prplanit-sites -- image plus a
+    # Cloudflare Pages deploy -- under a different org, so a separate profile: identity
+    # and the write token both change, and neither is a per-repo fact.
+    sofmeright-sites:
+      credentials: GITLAB
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        orgs:
+          SoFMeRight:
+            maintainer: "SoFMeRight <sofmeright@gmail.com>"
+            aliases: { handle: sofmeright, github: SoFMeRight, docker: sofmeright, ghcr: sofmeright }
+        git: { preset: "preset/git.yml" }
+        builds: { preset: "preset/build-docker.yml" }
+        forges: { preset: "preset/forges.yml" }
+        registries: { preset: "preset/registries.yml" }
+        publish: { preset: "preset/publish-docker-pages.yml" }
+        build_cache: { preset: "preset/build_cache.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-generic.yml" }
+        manifest: { preset: "preset/manifest.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
+        scribe: { preset: "preset/scribe-docker.yml" }
+
+      repos:
+        kai-hamilton.com:
+          at: SoFMeRight/kai-hamilton.com
+          config:
+            publish:
+              preset: "preset/publish-docker-pages.yml"
+              pages:
+                project: kai-hamilton
+                domain: kai-hamilton.com
+          title: "Kai Hamilton"
+          description:
+            - "Personal site for Kai Hamilton. Static marketing site on the hardened non-root static-site base."
+            - "Static marketing site for kai-hamilton.com, built on the hardened non-root static-site base image and deployed to Cloudflare Pages on every main push."
+          topics: [website, static-site, cloudflare-pages, docker]
+          license: MIT
+          category: websites
+
+        etherealclique.com:
+          at: SoFMeRight/etherealclique.com
+          config:
+            publish:
+              preset: "preset/publish-docker-pages.yml"
+              pages:
+                project: etherealclique
+                domain: etherealclique.com
+          title: "EtherealClique"
+          description:
+            - "Site for EtherealClique. Static marketing site on the hardened non-root static-site base."
+            - "Static marketing site for etherealclique.com, built on the hardened non-root static-site base image and deployed to Cloudflare Pages on every main push."
+          topics: [website, static-site, cloudflare-pages, docker]
+          license: MIT
+          category: websites
+
+        enamorafoto.com:
+          at: SoFMeRight/enamorafoto.com
+          config:
+            publish:
+              preset: "preset/publish-docker-pages.yml"
+              pages:
+                project: enamorafoto
+                domain: enamorafoto.com
+          title: "EnamoraFoto"
+          description:
+            - "Site for EnamoraFoto. Static marketing site on the hardened non-root static-site base."
+            - "Static marketing site for enamorafoto.com, built on the hardened non-root static-site base image and deployed to Cloudflare Pages on every main push."
+          topics: [website, static-site, cloudflare-pages, docker]
+          license: MIT
+          category: websites
+
+        yesimvegan.com:
+          at: SoFMeRight/yesimvegan.com
+          config:
+            publish:
+              preset: "preset/publish-docker-pages.yml"
+              pages:
+                project: yesimvegan
+                domain: yesimvegan.com
+          title: "YesImVegan"
+          description:
+            - "Site for YesImVegan. Static marketing site on the hardened non-root static-site base."
+            - "Static marketing site for yesimvegan.com, built on the hardened non-root static-site base image and deployed to Cloudflare Pages on every main push."
+          topics: [website, static-site, cloudflare-pages, docker]
+          license: MIT
+          category: websites
+
+        sofmeright.com:
+          at: SoFMeRight/sofmeright.com
+          config:
+            publish:
+              preset: "preset/publish-docker-pages.yml"
+              pages:
+                project: sofmeright
+                domain: sofmeright.com
+          title: "SoFMeRight"
+          description:
+            - "Site for SoFMeRight. Static marketing site on the hardened non-root static-site base."
+            - "Static marketing site for sofmeright.com, built on the hardened non-root static-site base image and deployed to Cloudflare Pages on every main push."
+          topics: [website, static-site, cloudflare-pages, docker]
+          license: MIT
+          category: websites
+
+        astralfocal.com:
+          at: SoFMeRight/astralfocal.com
+          config:
+            publish:
+              preset: "preset/publish-docker-pages.yml"
+              pages:
+                project: astralfocal
+                domain: astralfocal.com
+          title: "AstralFocal"
+          description:
+            - "Site for AstralFocal. Static marketing site on the hardened non-root static-site base."
+            - "Static marketing site for astralfocal.com, built on the hardened non-root static-site base image and deployed to Cloudflare Pages on every main push."
+          topics: [website, static-site, cloudflare-pages, docker]
+          license: MIT
+          category: websites
+
+    # Dungeon: a gitops repo, not a build. No builds, no publish, no registries -- the
+    # repo IS the cluster state. Its badges describe the estate (flux, k8s, ansible,
+    # compose, app inventory) rather than an artifact, so they stay repo-declared; the
+    # shared rows below come from the same presets everything else uses, in the same
+    # order, so only the genuinely unique rows differ.
+    sofmeright-gitops:
+      credentials: GITLAB
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        lifecycle:
+          mode: gitops
+        orgs:
+          SoFMeRight:
+            maintainer: "SoFMeRight <sofmeright@gmail.com>"
+            aliases: { handle: sofmeright, github: SoFMeRight, docker: sofmeright, ghcr: sofmeright }
+        git: { preset: "preset/git.yml" }
+        forges: { preset: "preset/forges.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-generic.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-pipeline.yml"] }
+        scribe: { preset: "preset/scribe-governance.yml" }
+
+      repos:
+        dungeon:
+          at: SoFMeRight/dungeon
+          # The estate badges and their scribe rows are this repo's own: no other repo
+          # renders a cluster inventory. Shared rows keep the fleet order; the unique
+          # stack/inventory rows follow them.
+          config:
+            stencils:
+              presets: ["preset/stencils-base.yml", "preset/stencils-pipeline.yml"]
+              ansible:           { render: shield, label: Ansible, message: automation, color: "#EE0000", logo: ansible, logo_color: white, link: ansible }
+              kubernetes:        { render: shield, label: Kubernetes, message: k8s, color: "#326CE5", logo: kubernetes, logo_color: white, link: fluxcd }
+              fluxcd:            { render: shield, label: FluxCD, message: gitops, color: "#5468FF", logo: flux, logo_color: white, link: fluxcd }
+              docker-compose:    { render: shield, label: Compose, message: stacks, color: "#2496ED", logo: docker, logo_color: white, link: docker }
+              applications:      { render: shield, label: Applications, message: "{inventory.dungeon.count}", color: "#0F1689", logo: kubernetes, logo_color: white, link: "docs/Apps_&_Services-Overview.md" }
+              cluster-inventory: { type: k8s-inventory, catalog: .stagefreight/catalog.yml }
+            scribe:
+              preset: "preset/scribe-governance.yml"
+              files:
+                readme.stack:    { file: "README.md", between: ["<!-- sf:stack:start -->", "<!-- sf:stack:end -->"], items: [ansible, kubernetes, fluxcd, applications, docker-compose] }
+                apps.inventory:  { file: "docs/Apps_&_Services-Overview.md", between: ["<!-- sf:apps:start -->", "<!-- sf:apps:end -->"], items: [cluster-inventory] }
+          title: "Dungeon"
+          description:
+            - "GitOps state for the dungeon Kubernetes cluster and its Docker hosts."
+            - "The cluster's source of truth: Flux manifests, Ansible automation and compose stacks for every service running on the estate."
+          topics: [gitops, kubernetes, fluxcd, ansible, homelab]
+          license: MIT
+          category: infrastructure
+
 # ── badges: the control repo dogfoods the SAME shared preset library it ships. The
 # standard rows come from the presets (no inline stencils); MP is neither Go nor a
 # container, so it takes the plain-app scribe rows. publish (all modes) renders them. ──

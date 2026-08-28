@@ -1,4 +1,9 @@
-# publish — docker bucket PLUS a Cloudflare Pages deploy. Composed for repos that both
+# publish — SITE bucket: an image plus a Cloudflare Pages deploy.
+#
+# Registries are ghcr + harbor, NOT dockerhub. A marketing site's image is pulled by the
+# cluster that serves it, never by the public, so publishing it to Docker Hub spends a
+# public namespace on something nobody pulls from there. Every site repo already had it
+# this way; the docker bucket keeps dockerhub because its images ARE the product. Composed for repos that both
 # build an image and publish a static site (the .com repos): everything below the pages
 # target is identical to publish-docker.yml, so the two stay in step by being edited
 # together, and the pages target carries only the half that is the SAME for every site.
@@ -9,21 +14,21 @@
 publish:
   stable:
     kind: registry
-    registry: [dockerhub, ghcr, harbor]
+    registry: [harbor, ghcr]
     build: image
     tags: ["v{version}", "latest"]
     when: { git_tags: [stable], events: [tag] }
 
   prerelease:
     kind: registry
-    registry: [dockerhub, ghcr, harbor]
+    registry: [ghcr]
     build: image
     tags: ["v{version}"]
     when: { git_tags: [prerelease], events: [tag] }
 
   dev:
     kind: registry
-    registry: [dockerhub, ghcr, harbor]
+    registry: [harbor, ghcr]
     build: image
     tags: ["dev-{sha:8}", "latest-dev"]
     when: { branches: [main], events: [push] }
@@ -32,7 +37,7 @@ publish:
 
   project-metadata:
     kind: metadata
-    registry: [dockerhub, harbor]
+    registry: [harbor]
     repos: [primary, github-mirror]
     readme: README.md
     when: { branches: [main], events: [push, tag] }
