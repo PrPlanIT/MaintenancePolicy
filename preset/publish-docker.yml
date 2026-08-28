@@ -37,10 +37,7 @@ publish:
   release:
     kind: release
     type: latest
-    # Both forges: the mirror is the public face of these repos, and a release that
-    # exists only on the source forge is invisible to everyone who found the project
-    # through GitHub.
-    repos: [primary, github-mirror]
+    repos: [primary]
     aliases: ["v{version}", "latest"]
     when: { git_tags: [stable], events: [tag] }
 
@@ -51,7 +48,7 @@ publish:
   dev-release:
     kind: release
     type: prerelease
-    repos: [primary, github-mirror]
+    repos: [primary]
     when: { branches: [main], events: [push] }
     retention:
       keep_last: 2
