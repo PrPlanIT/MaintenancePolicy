@@ -135,8 +135,9 @@ governance:
           config:
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
-              contents-base:     { type: contents, build: image, section: inventories.versions, render: badges }
-              contents-apk:      { type: contents, build: image, section: inventories.apk, render: badges }
+              # contents-base and contents-apk come from stencils-docker now; only the
+              # inventories unique to this image are declared here. Redeclaring the
+              # shared two is a duplicate-key error, not an override.
               contents-pip:      { type: contents, build: image, section: inventories.pip, render: badges }
               contents-galaxy:   { type: contents, build: image, section: inventories.galaxy, render: badges }
               contents-binaries: { type: contents, build: image, section: inventories.binaries, render: badges }
@@ -178,18 +179,9 @@ governance:
 
         ark-se-server:
           at: HomeLabHD/ark-se-server
-          # Deviating: it renders a base-image inventory into its README.
           # OPEN — default branch is `master` while the publish preset gates on `main`,
           # so publish will not fire until that branch is flipped. Not worked around
           # here: overriding publish: would replace the whole section wholesale.
-          config:
-            stencils:
-              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
-              contents-base: { type: contents, build: image, section: inventories.versions, render: badges }
-            scribe:
-              preset: "preset/scribe-docker.yml"
-              files:
-                readme.contents.base: { file: "README.md", between: ["<!-- sf:contents-base:start -->", "<!-- sf:contents-base:end -->"], items: [contents-base] }
           title: "ARK: Survival Evolved Server"
           description:
             - "Dedicated server image for ARK: Survival Evolved, for single instances and clusters."
@@ -254,18 +246,6 @@ governance:
 
         osticket:
           at: HomeLabHD/osticket
-          # Deviating for the same reason as ansible, at smaller scale: it renders its
-          # base-image and apk inventories into the README.
-          config:
-            stencils:
-              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
-              contents-base: { type: contents, build: image, section: inventories.versions, render: badges }
-              contents-apk:  { type: contents, build: image, section: inventories.apk, render: badges }
-            scribe:
-              preset: "preset/scribe-docker.yml"
-              files:
-                readme.contents.base: { file: "README.md", between: ["<!-- sf:contents-base:start -->", "<!-- sf:contents-base:end -->"], items: [contents-base] }
-                readme.contents.apk:  { file: "README.md", between: ["<!-- sf:contents-apk:start -->", "<!-- sf:contents-apk:end -->"], items: [contents-apk] }
           title: "osTicket"
           description:
             - "Rootless container image for osTicket, the open-source support ticketing system."
@@ -288,6 +268,57 @@ governance:
           topics: [prometheus, exporter, ups, eaton, monitoring]
           license: ISC
           category: monitoring
+
+    # A SECOND profile rather than more repos in hlhd-docker: a profile is a credential
+    # and identity scope, not a config bundle. PrPlanIT repos live in a different GitLab
+    # group (its own write token) and publish under the prplanit registry namespaces, so
+    # folding them in would mean one token reaching across both groups and an `orgs:`
+    # block carrying an org its own name denies. The POLICY is identical — every preset
+    # below is the same file hlhd-docker uses.
+    prplanit-docker:
+      # GITLAB_TOKEN — MP itself lives in PrPlanIT, so its own group token already
+      # writes here. hlhd-docker needs the separate GITLAB_HOMELABHD_TOKEN because that
+      # group is not MP's own; stated explicitly so neither profile looks like it
+      # inherits the other's credential.
+      credentials: GITLAB
+
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        orgs:
+          PrPlanIT:
+            maintainer: "PrPlanIT <precisionplanit@gmail.com>"
+            aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit, ghcr: prplanit }
+        git: { preset: "preset/git.yml" }
+        builds: { preset: "preset/build-docker.yml" }
+        forges: { preset: "preset/forges.yml" }
+        registries: { preset: "preset/registries.yml" }
+        publish: { preset: "preset/publish-docker.yml" }
+        build_cache: { preset: "preset/build_cache.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-generic.yml" }
+        manifest: { preset: "preset/manifest.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
+        scribe: { preset: "preset/scribe-docker.yml" }
+
+      repos:
+        fairer-pages:
+          at: PrPlanIT/fairer-pages
+          title: "Fairer Pages"
+          description:
+            - "Error pages as a service, with 64 themes and per-domain playlists."
+            - "Self-hosted error-page service that serves styled HTTP error pages per domain, shipping 64 themes and playlists that rotate between them, with low-code customisation so pages can be edited without touching the stack."
+          topics: [error-pages, self-hosted, themes, docker, web]
+          # AGPL-3.0 per the repo's LICENSE — a network-use copyleft, deliberately not
+          # the permissive default the other entries carry.
+          license: AGPL-3.0
+          category: applications
 
 # ── badges: the control repo dogfoods the SAME shared preset library it ships. The
 # standard rows come from the presets (no inline stencils); MP is neither Go nor a
