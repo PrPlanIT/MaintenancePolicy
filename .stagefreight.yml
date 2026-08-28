@@ -639,7 +639,11 @@ governance:
     # Cloudflare Pages deploy -- under a different org, so a separate profile: identity
     # and the write token both change, and neither is a per-repo fact.
     sofmeright-sites:
-      credentials: GITLAB
+      # GITLAB_SOFMERIGHT_TOKEN, held by the CONTROL repo. The satellites carry a plain
+      # GITLAB_TOKEN scoped to their own group; that one is theirs to publish with and
+      # cannot reach across, so the write token governance pushes WITH is a separate
+      # variable that only MaintenancePolicy holds -- the same split hlhd-docker uses.
+      credentials: GITLAB_SOFMERIGHT
       config:
         version: 1
         ci:
@@ -768,7 +772,7 @@ governance:
     # shared rows below come from the same presets everything else uses, in the same
     # order, so only the genuinely unique rows differ.
     sofmeright-gitops:
-      credentials: GITLAB
+      credentials: GITLAB_SOFMERIGHT
       config:
         version: 1
         ci:
