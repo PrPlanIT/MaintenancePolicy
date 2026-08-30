@@ -269,6 +269,24 @@ governance:
           license: ISC
           category: monitoring
 
+        weave-gitops:
+          at: HomeLabHD/weave-gitops
+          # A deviating entry: a fork carrying upstream's 302M website/ tree, which the
+          # generic exclude (binary file types only) would walk every run. Restated in
+          # full because a repo config: replaces the key rather than merging into it.
+          config:
+            lint:
+              preset: "preset/lint-generic.yml"
+              exclude: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico",
+                        "*.svg", "*.ttf", "*.woff", "*.woff2", "*.pdf", "website/**"]
+          title: "Weave GitOps"
+          description:
+            - "Web UI for Flux, showing GitOps reconciliation state across a cluster."
+            - "Fork of the Weave GitOps dashboard, serving a view of Flux Kustomizations, HelmReleases, and sources, with the image built and published from this repo."
+          topics: [gitops, flux, kubernetes, dashboard, continuous-delivery]
+          license: Apache-2.0
+          category: kubernetes
+
     # A SECOND profile rather than more repos in hlhd-docker: a profile is a credential
     # and identity scope, not a config bundle. PrPlanIT repos live in a different GitLab
     # group (its own write token) and publish under the prplanit registry namespaces, so
