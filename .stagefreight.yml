@@ -813,29 +813,12 @@ governance:
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
         toolchains: { preset: "preset/toolchains.yml" }
-        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-pipeline.yml"] }
-        scribe: { preset: "preset/scribe-governance.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-pipeline.yml", "preset/stencils-gitops.yml"] }
+        scribe: { preset: "preset/scribe-gitops.yml" }
 
       repos:
         dungeon:
           at: SoFMeRight/dungeon
-          # The estate badges and their scribe rows are this repo's own: no other repo
-          # renders a cluster inventory. Shared rows keep the fleet order; the unique
-          # stack/inventory rows follow them.
-          config:
-            stencils:
-              presets: ["preset/stencils-base.yml", "preset/stencils-pipeline.yml"]
-              ansible:           { render: shield, label: Ansible, message: automation, color: "#EE0000", logo: ansible, logo_color: white, link: ansible }
-              kubernetes:        { render: shield, label: Kubernetes, message: k8s, color: "#326CE5", logo: kubernetes, logo_color: white, link: fluxcd }
-              fluxcd:            { render: shield, label: FluxCD, message: gitops, color: "#5468FF", logo: flux, logo_color: white, link: fluxcd }
-              docker-compose:    { render: shield, label: Compose, message: stacks, color: "#2496ED", logo: docker, logo_color: white, link: docker }
-              applications:      { render: shield, label: Applications, message: "{inventory.dungeon.count}", color: "#0F1689", logo: kubernetes, logo_color: white, link: "docs/Apps_&_Services-Overview.md" }
-              cluster-inventory: { type: k8s-inventory, catalog: .stagefreight/catalog.yml }
-            scribe:
-              preset: "preset/scribe-governance.yml"
-              files:
-                readme.stack:    { file: "README.md", between: ["<!-- sf:stack:start -->", "<!-- sf:stack:end -->"], items: [ansible, kubernetes, fluxcd, applications, docker-compose] }
-                apps.inventory:  { file: "docs/Apps_&_Services-Overview.md", between: ["<!-- sf:apps:start -->", "<!-- sf:apps:end -->"], items: [cluster-inventory] }
           title: "Dungeon"
           description:
             - "GitOps state for the dungeon Kubernetes cluster and its Docker hosts."
