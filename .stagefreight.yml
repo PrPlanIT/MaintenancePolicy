@@ -210,6 +210,46 @@ governance:
           license: BSD-3-Clause
           category: networking
 
+        frappe-suite:
+          at: HomeLabHD/frappe-suite
+          # Deviating: upstream owns the build recipe. frappe_docker is a pinned
+          # submodule rather than a vendored copy, so the recipe cannot drift from the
+          # project that maintains it, and the app set is passed as a build secret —
+          # neither of which the shared docker build can describe.
+          config:
+            git:
+              preset: "preset/git.yml"
+              # Without the submodule the context directory is empty and the build
+              # fails on a missing Containerfile rather than on the checkout it skipped.
+              submodules: true
+            builds:
+              image:
+                kind: docker
+                dockerfile: frappe_docker/images/custom/Containerfile
+                context: frappe_docker
+                platforms: [linux/amd64]
+                secrets:
+                  # The Containerfile mounts the app list for a single RUN; the
+                  # APPS_JSON_BASE64 build arg most guides still show is gone upstream.
+                  apps_json: apps.json
+                build_args:
+                  # A v15 app cannot run on a v16 framework, and the Containerfile
+                  # defaults to v16; every app in apps.json is v15.
+                  FRAPPE_BRANCH: version-15
+                  PYTHON_VERSION: "3.12.12"
+                  NODE_VERSION: "22.22.0"
+            build_cache:
+              preset: "preset/build_cache.yml"
+              # Local only: the shared policy also pushes cache layers to Harbor, which
+              # for an image this size costs more registry storage than the pull saves.
+              mode: local
+          title: "Frappe Bench"
+          description:
+            - "ERPNext with HR, CRM, and helpdesk, built as one container image."
+            - "Frappe bench image bundling ERPNext, HRMS, telephony, and helpdesk on the v15 framework."
+          topics: [erpnext, frappe, erp, hrms, helpdesk, docker]
+          license: GPL-3.0
+          category: applications
         nginx-extras:
           at: HomeLabHD/nginx-extras
           title: "NGINX Extras"
