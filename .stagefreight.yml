@@ -238,6 +238,54 @@ governance:
                   FRAPPE_BRANCH: version-15
                   PYTHON_VERSION: "3.12.12"
                   NODE_VERSION: "22.22.0"
+            dependency:
+              preset: "preset/dependency.yml"
+              # Advisories carried deliberately, each one named. They are all in the
+              # vitepress toolchain of frappe_docker/docs — upstream's documentation site,
+              # which no stage of this build installs into the image. They are also
+              # unfixable from here: submodule files are not tracked by this repo, so the
+              # updater cannot rewrite that lockfile, and v3.2.2 is upstream's newest tag,
+              # so there is no pin to move to. The expiry is the point — when it lapses
+              # these block again and the decision gets remade.
+              ignore:
+                - id: GHSA-28wg-ghj8-5hjv
+                  reason: "nanoid DoS — docs-site build tool, absent from the image"
+                  until: "2026-12-01"
+                - id: GHSA-2v37-7h3g-55p8
+                  reason: "nanoid DoS — docs-site build tool, absent from the image"
+                  until: "2026-12-01"
+                - id: GHSA-3jxr-9vmj-r5cp
+                  reason: "brace-expansion DoS — docs-site build tool, absent from the image"
+                  until: "2026-12-01"
+                - id: GHSA-mh99-v99m-4gvg
+                  reason: "brace-expansion DoS — docs-site build tool, absent from the image"
+                  until: "2026-12-01"
+                - id: GHSA-rgw5-rvv9-x895
+                  reason: "brace-expansion DoS — docs-site build tool, absent from the image"
+                  until: "2026-12-01"
+                - id: GHSA-52cp-r559-cp3m
+                  reason: "js-yaml CPU exhaustion — docs-site build tool, parses no untrusted input here"
+                  until: "2026-12-01"
+                - id: GHSA-5p4m-2wfm-xmqj
+                  reason: "js-yaml CPU exhaustion — docs-site build tool, parses no untrusted input here"
+                  until: "2026-12-01"
+                - id: GHSA-fx2h-pf6j-xcff
+                  reason: "vite dev-server path bypass on Windows — no dev server runs, and CI is linux"
+                  until: "2026-12-01"
+                - id: GHSA-r28c-9q8g-f849
+                  reason: "postcss source-map path traversal — docs-site build tool, absent from the image"
+                  until: "2026-12-01"
+            lint:
+              preset: "preset/lint-generic.yml"
+              modules:
+                # images/bench is upstream's development container, which this repo does
+                # not build — only images/custom is. Its base-image staleness is a real
+                # finding for whoever ships that image and nothing this repo can act on.
+                # Scoped to freshness alone and to that directory alone, so the
+                # Containerfile we DO build stays fully scanned.
+                freshness:
+                  exclude:
+                    - "frappe_docker/images/bench/**"
             build_cache:
               preset: "preset/build_cache.yml"
               # Local only: the shared policy also pushes cache layers to Harbor, which
