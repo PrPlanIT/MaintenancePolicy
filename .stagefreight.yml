@@ -233,11 +233,36 @@ governance:
                   # APPS_JSON_BASE64 build arg most guides still show is gone upstream.
                   apps_json: apps.json
                 build_args:
-                  # A v15 app cannot run on a v16 framework, and the Containerfile
-                  # defaults to v16; every app in apps.json is v15.
-                  FRAPPE_BRANCH: version-15
-                  PYTHON_VERSION: "3.12.12"
-                  NODE_VERSION: "22.22.0"
+                  # The interpreters are stated rather than inherited. The Containerfile
+                  # defaults to this same pairing today, but a default is upstream's to
+                  # change, and a build that learns its interpreter from whichever
+                  # frappe_docker it happens to be pinned to is not reproducible however
+                  # carefully everything else is pinned.
+                  PYTHON_VERSION: "3.14.2"
+                  NODE_VERSION: "24.13.0"
+                  # The framework tracks its series branch instead of a release tag, so
+                  # patches arrive without an edit here. Nothing in the pipeline watches
+                  # these values — a tag would sit at whatever it was set to until someone
+                  # noticed, which for the framework is the component least worth freezing.
+                  # The cost is that a rebuild is not byte-identical, and the series alias
+                  # this publishes under is exactly what stays true regardless.
+                  FRAPPE_BRANCH: version-16
+            publish:
+              preset: "preset/publish-docker.yml"
+              # Series aliases, added to the shared targets. This repo's own version names
+              # THIS artifact — its app set, its interpreter pins — which is not something
+              # ERPNext's numbering can express: two builds of the same upstream release
+              # with different apps are different images. So the upstream line is carried
+              # as a separate rolling alias instead of being claimed as the version.
+              #
+              # The alias is a fact rather than a promise: apps.json names exact upstream
+              # tags, so the series is guaranteed by the pins. It is also a literal, and
+              # nothing ties it to those pins — moving the set to v17 means changing it
+              # here by hand. That is the one place this can still lie.
+              stable:
+                tags: ["v{version}", "latest", "latest-v16"]
+              dev:
+                tags: ["dev-{sha:8}", "latest-dev", "latest-v16-dev"]
             dependency:
               preset: "preset/dependency.yml"
               # Advisories carried deliberately, each one named. They are all in the
