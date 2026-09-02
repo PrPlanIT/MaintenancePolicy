@@ -44,6 +44,8 @@ publish:
 
   release:
     kind: release
+    security_summary: true
+    registry_links: true
     type: latest
     repos: [primary]
     aliases: ["v{version}", "latest"]
@@ -51,6 +53,8 @@ publish:
 
   dev-release:
     kind: release
+    security_summary: true
+    registry_links: true
     type: prerelease
     repos: [primary]
     tag: "dev-{sha:8}"

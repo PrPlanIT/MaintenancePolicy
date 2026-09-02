@@ -2,5 +2,7 @@ targets:
   # ── Primary release (rolling git tag aliases) ────────────────────
   - id: primary-release
     kind: release
+    security_summary: true
+    registry_links: true
     aliases: ["v{version}", "latest"]
     when: { git_tags: [stable], events: [tag] }
