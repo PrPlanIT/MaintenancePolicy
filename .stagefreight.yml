@@ -323,6 +323,41 @@ governance:
           topics: [erpnext, frappe, erp, hrms, helpdesk, docker]
           license: GPL-3.0
           category: applications
+        hubzilla:
+          at: HomeLabHD/hubzilla
+          # Deviating: upstream publishes only to framagit, which drops this network's
+          # egress and has no maintained third-party mirror, so the components are pinned
+          # against HomeLabHD's own mirrors and fetched at build time. The upstream
+          # container clones on every container start instead, which makes the running
+          # version a function of when a pod restarted and puts an outage between the
+          # project and a booting pod.
+          config:
+            builds:
+              image:
+                kind: docker
+                dockerfile: Dockerfile
+                context: .
+                platforms: [linux/amd64]
+                build_args:
+                  # Refreshing the mirrors tracks upstream; changing these ships it.
+                  HUBZILLA_REF: "11.4"
+                  ADDONS_REF: "11.4"
+                  PHP_VERSION: "8.3"
+            publish:
+              preset: "preset/publish-docker.yml"
+              # The series alias is a literal and nothing ties it to the refs above, so
+              # moving the pins to a 12.x line means changing it here by hand.
+              stable:
+                tags: ["v{version}", "latest", "latest-v11"]
+              dev:
+                tags: ["dev-{sha:8}", "latest-dev", "latest-v11-dev"]
+          title: "Hubzilla"
+          description:
+            - "Hubzilla and its official addons, built at a pinned upstream revision."
+            - "Container image for Hubzilla, a federated social platform with nomadic identity and per-object permissions, carrying the official addon set so ActivityPub federation is available rather than Zot alone."
+          topics: [hubzilla, fediverse, activitypub, zot, nomadic-identity, docker]
+          license: MIT
+          category: applications
         nginx-extras:
           at: HomeLabHD/nginx-extras
           title: "NGINX Extras"
