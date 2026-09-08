@@ -358,6 +358,36 @@ governance:
           topics: [hubzilla, fediverse, activitypub, zot, nomadic-identity, docker]
           license: MIT
           category: applications
+        synapse:
+          at: HomeLabHD/synapse
+          # Deviating: this is a packaging layer, not a build of the project. Upstream's
+          # own Dockerfile is 200 lines of cross-architecture machinery whose output is the
+          # image published to ghcr, and everything wanted here — two modules, a non-root
+          # user, no installer, no setuid — lives in the final layer. Building from source
+          # would reproduce all of it to arrive at the same place, so the base is pinned by
+          # digest instead and the source is mirrored, unbuilt, at HomeLabHD/synapse-core.
+          config:
+            builds:
+              image:
+                kind: docker
+                dockerfile: Dockerfile
+                context: .
+                platforms: [linux/amd64]
+                build_args:
+                  # The base digest is pinned in the Dockerfile; these are the modules baked
+                  # in beside it. pip is removed afterwards, so adding one later is a
+                  # rebuild — which is why the set is decided up front.
+                  S3_PROVIDER_VERSION: "1.7.0"
+                  HTTP_ANTISPAM_VERSION: "0.5.1"
+          title: "Synapse"
+          description:
+            - "Synapse with S3 media offload and the antispam hook, hardened and rootless."
+            - "Container image for Synapse, the reference Matrix homeserver, adding media offload to S3-compatible object storage and the HTTP antispam hook moderation tooling needs. Runs as a non-root user with no package installer and no setuid binaries, and replaces the root entrypoint with a direct invocation."
+          topics: [matrix, synapse, homeserver, federation, docker]
+          # Upstream's license, kept as-is — matches org.opencontainers.image.licenses.
+          license: AGPL-3.0-or-later
+          category: applications
+
         nginx-extras:
           at: HomeLabHD/nginx-extras
           title: "NGINX Extras"
