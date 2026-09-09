@@ -569,7 +569,7 @@ governance:
             - "Web UI for managing Docker hosts and their compose stacks."
             - "Browser interface over Docker and compose deployments, for inspecting and operating containers across hosts."
           topics: [docker, ui, web, management]
-          license: MIT
+          license: AGPL-3.0-only
           category: applications
 
     # A THIRD profile, sibling to prplanit-docker and on the same PrPlanIT token: these
@@ -752,7 +752,7 @@ governance:
             - "Stateful-workload steward for Kubernetes: bootstraps, heals and migrates databases."
             - "Operator-facing tool that bootstraps and repairs stateful workloads on Kubernetes -- Galera, CNPG and friends -- including triage and recovery of clusters that will not converge on their own."
           topics: [kubernetes, databases, galera, cnpg, operations]
-          license: MIT
+          license: AGPL-3.0-only
           category: infrastructure
 
     # Binary-only: same policy as prplanit-go, minus every registry target. No image is
@@ -1002,7 +1002,7 @@ governance:
             - "GitOps state for the dungeon Kubernetes cluster and its Docker hosts."
             - "The cluster's source of truth: Flux manifests, Ansible automation and compose stacks for every service running on the estate."
           topics: [gitops, kubernetes, fluxcd, ansible, homelab]
-          license: MIT
+          license: GPL-3.0-only
           category: infrastructure
 
 # ── badges: the control repo dogfoods the SAME shared preset library it ships. The
