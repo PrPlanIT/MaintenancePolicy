@@ -1015,7 +1015,10 @@ governance:
       config:
         version: 1
         ci:
-          forge: [gitlab]
+          # Both surfaces, unlike every other profile: these forks actually run their
+          # pipeline on the GitHub mirror, so its workflow is a generated artifact too and
+          # governing only GitLab would leave the surface that builds them hand-managed.
+          forge: [gitlab, github]
           image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
         orgs:
           riff.cc:
