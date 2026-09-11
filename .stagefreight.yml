@@ -1005,6 +1005,91 @@ governance:
           license: GPL-3.0-only
           category: infrastructure
 
+    # Our forks of riff.cc upstream projects, which live in their own GitLab group and so
+    # need their own write token — a profile is a credential and identity scope. The org
+    # is keyed riff.cc because metadata.org doubles as the GitLab group ({org} resolves
+    # the forge path); every other surface is ours, because riffcc is a namespace we hold
+    # on GitLab alone. Harbor needs no alias: registries.yml resolves it via {org.docker}.
+    riffcc-docker:
+      credentials: GITLAB_RIFFCC
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        orgs:
+          riff.cc:
+            maintainer: "HomeLabHD <homelabhelp@gmail.com>"
+            aliases: { handle: hlhd, github: HomeLabHD, docker: hlhd, ghcr: homelabhd }
+        git: { preset: "preset/git.yml" }
+        builds: { preset: "preset/build-docker.yml" }
+        forges: { preset: "preset/forges.yml" }
+        registries: { preset: "preset/registries.yml" }
+        publish: { preset: "preset/publish-docker.yml" }
+        build_cache: { preset: "preset/build_cache.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-generic.yml" }
+        manifest: { preset: "preset/manifest.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
+        scribe: { preset: "preset/scribe-docker.yml" }
+
+      repos:
+        dragonfly:
+          at: riff.cc/dragonfly
+          # Both of these compile a Rust binary and stage it into the image rather than
+          # recompiling inside it, so builds: is restated per repo. The build KEYS are the
+          # shared names (image/bin) so the profile's publish preset resolves them; the
+          # staged filename stays the product name because the Dockerfile COPYs it.
+          config:
+            builds:
+              image:
+                kind: docker
+                platforms: [linux/amd64]
+                stage:
+                  from: bin
+                  as: "dragonfly-{arch}"
+              bin:
+                kind: binary
+                builder: rust
+                from: .
+                output: dragonfly
+                platforms: [linux/amd64]
+          title: "Dragonfly"
+          description:
+            - "Platform for managing and deploying bare-metal infrastructure at any scale."
+            - "Fast, flexible bare-metal provisioning and lifecycle management — metal, managed."
+          topics: [bare-metal, provisioning, infrastructure, deployment, rust]
+          license: AGPL-3.0-only
+          category: infrastructure
+
+        jetpack:
+          at: riff.cc/jetpack
+          config:
+            builds:
+              image:
+                kind: docker
+                platforms: [linux/amd64]
+                stage:
+                  from: bin
+                  as: "jetpack-{arch}"
+              bin:
+                kind: binary
+                builder: rust
+                from: .
+                output: jetpack
+                platforms: [linux/amd64]
+          title: "Jetpack"
+          description:
+            - "General-purpose IT automation platform for configuration management and orchestration."
+            - "Community-driven automation for configuration management, deployment, orchestration, patching and arbitrary task workflows; a continuation of the Jetporch project."
+          topics: [automation, configuration-management, orchestration, devops, rust]
+          license: GPL-3.0-only
+          category: infrastructure
+
 # ── badges: the control repo dogfoods the SAME shared preset library it ships. The
 # standard rows come from the presets (no inline stencils); MP is neither Go nor a
 # container, so it takes the plain-app scribe rows. publish (all modes) renders them. ──
