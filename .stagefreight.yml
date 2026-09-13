@@ -358,6 +358,19 @@ governance:
           topics: [hubzilla, fediverse, activitypub, zot, nomadic-identity, docker]
           license: MIT
           category: applications
+        linkstack:
+          at: HomeLabHD/LinkStack
+          # main carries the consumable build (upstream's Laravel 12 `beta` line plus this
+          # fork's patches); the `original` branch mirrors upstream, so publish fires from
+          # main like the rest of the profile. License is AGPL-3.0 per upstream's LICENSE
+          # file (its composer.json's GPL-3.0 is an upstream inconsistency).
+          title: "LinkStack"
+          description:
+            - "Self-hosted link-in-bio page — showcase all your links on your own server."
+            - "Container image for LinkStack, the self-hosted link-in-bio / personal-profile platform (Laravel), built on Alpine + Apache + PHP 8.3 as the non-root apache user, with generic OpenID Connect SSO against any discovery-based issuer."
+          topics: [linkstack, linktree, link-in-bio, php, laravel, oidc, sso]
+          license: AGPL-3.0
+          category: applications
         synapse:
           at: HomeLabHD/synapse
           # Deviating: this is a packaging layer, not a build of the project. Upstream's
