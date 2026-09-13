@@ -371,6 +371,38 @@ governance:
           topics: [linkstack, linktree, link-in-bio, php, laravel, oidc, sso]
           license: AGPL-3.0
           category: applications
+          # A deviating entry: LinkStack carries a large vendored front-end (CKEditor, the
+          # compiled asset bundles, the button-editor libraries) plus an npm build/asset
+          # toolchain, none of it LinkStack's own source. Cleaning it would mean PRs to a
+          # dozen upstreams and would reset on every sync, so it is scoped out of lint while
+          # the app's own PHP/blade/config/themes stay fully scanned.
+          config:
+            lint:
+              preset: "preset/lint-generic.yml"
+              exclude:
+                - "resources/ckeditor/**"
+                - "assets/external-dependencies/**"
+                - "assets/vendor/**"
+                - "assets/js/**"
+                - "assets/css/**"
+                - "assets/button-editor/**"
+              modules:
+                # The npm build/asset toolchain (tailwindcss, alpinejs, postcss-import) is
+                # upstream's; its stale majors are only actionable by whoever migrates that
+                # toolchain, not this fork. Scoped to freshness on the manifest alone.
+                freshness:
+                  exclude:
+                    - "package.json"
+            dependency:
+              preset: "preset/dependency.yml"
+              # Carried deliberately, named: a uuid buffer-bounds advisory in the npm
+              # build-tool chain — absent from the runtime PHP image and only fixable via a
+              # breaking uuid 8->11 major that is upstream's asset-build call. Runtime PHP
+              # deps stay scanned; the expiry re-surfaces this for a fresh decision.
+              ignore:
+                - id: GHSA-w5hq-g745-h8pq
+                  reason: "uuid buffer-bounds (v3/v5/v6 with buf) — npm build-tool transitive, absent from the runtime image; fix needs uuid 8->11 major"
+                  until: "2026-12-01"
         synapse:
           at: HomeLabHD/synapse
           # Deviating: this is a packaging layer, not a build of the project. Upstream's
