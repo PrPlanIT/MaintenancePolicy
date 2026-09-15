@@ -829,6 +829,33 @@ governance:
         scribe: { preset: "preset/scribe-go.yml" }
 
       repos:
+        CryoSheep:
+          at: PrPlanIT/CryoSheep
+          # builds are irreducibly per-repo: the ldflags carry this module's own
+          # version package path. The build ID is the standard one (bin) so the
+          # shared publish targets need no per-repo editing.
+          config:
+            builds:
+              bin:
+                kind: binary
+                builder: go
+                from: ./cmd/cryosheep
+                output: cryosheep
+                env: { CGO_ENABLED: "0" }
+                args: ["-ldflags", "-s -w -X github.com/PrPlanIT/CryoSheep/src/version.Version={version} -X github.com/PrPlanIT/CryoSheep/src/version.Commit={sha} -X github.com/PrPlanIT/CryoSheep/src/version.BuildDate={date}"]
+                platforms: [linux/amd64, linux/arm64]
+            # prplanit-bin carries no test preset, and this is a tool whose whole
+            # argument over a templated script is that its ordering, gates and
+            # timeouts can be tested without a hypervisor or a UPS.
+            test: { preset: "preset/test-go.yml" }
+          title: "CryoSheep"
+          description:
+            - "Shuts a host and its guests down in order, on power loss or a normal reboot."
+            - "Sequencer invoked by systemd on reboot and by upsmon when a UPS gives up: stops guests over ACPI so they shut down properly rather than being yanked, quiesces Ceph, arms the UPS's own power-off as a backstop, and journals every decision locally so an outage can be reconstructed once logging is back."
+          topics: [ups, nut, shutdown, proxmox, ceph, kubernetes, homelab]
+          license: MIT
+          category: infrastructure
+
         DisplayWizard:
           at: PrPlanIT/DisplayWizard
           # Windows-only, and the desktop artifact is an Electron pack rather than a Go
