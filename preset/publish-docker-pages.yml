@@ -51,6 +51,18 @@ publish:
     aliases: ["v{version}", "latest"]
     when: { git_tags: [stable], events: [tag] }
 
+  prerelease-release:
+    # An -rc tag is a release candidate: it should be reachable from the repo like
+    # any other, marked prerelease so it does not displace the latest stable one,
+    # and without the "latest" alias for the same reason. Pages are deliberately
+    # absent — a candidate must not overwrite the published documentation site.
+    kind: release
+    security_summary: true
+    registry_links: true
+    repos: [primary]
+    type: prerelease
+    when: { git_tags: [prerelease], events: [tag] }
+
   dev-release:
     kind: release
     security_summary: true
