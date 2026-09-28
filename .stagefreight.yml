@@ -340,8 +340,8 @@ governance:
                 platforms: [linux/amd64]
                 build_args:
                   # Refreshing the mirrors tracks upstream; changing these ships it.
-                  HUBZILLA_REF: "11.4"
-                  ADDONS_REF: "11.4"
+                  HUBZILLA_REF: "11.4.1"
+                  ADDONS_REF: "11.4.1"
                   PHP_VERSION: "8.3"
             publish:
               preset: "preset/publish-docker.yml"
@@ -495,13 +495,30 @@ governance:
         weave-gitops:
           at: HomeLabHD/weave-gitops
           # A deviating entry: a fork carrying upstream's 302M website/ tree, which the
-          # generic exclude (binary file types only) would walk every run. Restated in
-          # full because a repo config: replaces the key rather than merging into it.
+          # generic exclude (binary file types only) would walk every run, plus a build
+          # that must name its Dockerfile and a frontend held behind upstream tooling.
+          # Each section is restated in full because a repo config: replaces the key
+          # rather than merging into it.
           config:
+            builds:
+              preset: "preset/build-docker.yml"
+              # Three Dockerfiles ship (dev/gitops-server/gitops); the published image is
+              # the server (UI + API). Named so the build does not lexical-pick
+              # dev.dockerfile (a local-dev stub) — StageFreight refuses to guess among several.
+              image:
+                dockerfile: gitops-server.dockerfile
             lint:
               preset: "preset/lint-generic.yml"
               exclude: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico",
                         "*.svg", "*.ttf", "*.woff", "*.woff2", "*.pdf", "website/**"]
+              modules:
+                # Held from freshness only — each is blocked by upstream tooling, not
+                # neglect; freshness stays live for every other dependency:
+                #   typescript 7  — ts-jest (<6.1.0) / parcel lack TS7 native-compiler support
+                #   @babel/* 8    — parcel hard-pins @babel/core ^7
+                #   eslint 10     — eslint-plugin-react (<=^9.7) / eslint-plugin-import (<=^9)
+                freshness:
+                  ignore: ["typescript", "@babel/core", "@babel/preset-env", "eslint", "@eslint/js"]
           title: "Weave GitOps"
           description:
             - "Web UI for Flux, showing GitOps reconciliation state across a cluster."
