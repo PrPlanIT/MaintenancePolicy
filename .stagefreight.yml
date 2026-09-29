@@ -507,14 +507,9 @@ governance:
               # dev.dockerfile (a local-dev stub) — StageFreight refuses to guess among several.
               image:
                 dockerfile: gitops-server.dockerfile
-                # Version ldflags: git is not in the build context, so the Dockerfile
-                # takes these as build args and forwards them to make (which assembles
-                # the -X ldflags). Without them the binary reports v0.0.0.
-                build_args:
-                  VERSION: "{version}"
-                  GIT_COMMIT: "{sha}"
-                  BUILD_TIME: "{date}"
-                  BRANCH: "{branch}"
+                # No build_args for version: StageFreight auto-injects VERSION/COMMIT/
+                # BUILD_DATE from the resolved version + SHA because the Dockerfile
+                # declares those ARGs. An explicit build_arg would OVERRIDE (block) that.
             lint:
               preset: "preset/lint-generic.yml"
               exclude: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico",
