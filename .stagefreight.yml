@@ -517,8 +517,12 @@ governance:
                 #   typescript 7  — ts-jest (<6.1.0) / parcel lack TS7 native-compiler support
                 #   @babel/* 8    — parcel hard-pins @babel/core ^7
                 #   eslint 10     — eslint-plugin-react (<=^9.7) / eslint-plugin-import (<=^9)
+                #   react-router 8 — ESM-only + SSR barrel breaks jest, gives this
+                #     client-side SPA no feature; upstream weave-gitops is on 7. Held at
+                #     7.18.4 (a maintained line, no security delta). Adopt deliberately if
+                #     7.x EOLs or a v8 feature is needed.
                 freshness:
-                  ignore: ["typescript", "@babel/core", "@babel/preset-env", "eslint", "@eslint/js"]
+                  ignore: ["typescript", "@babel/core", "@babel/preset-env", "eslint", "@eslint/js", "react-router"]
           title: "Weave GitOps"
           description:
             - "Web UI for Flux, showing GitOps reconciliation state across a cluster."
