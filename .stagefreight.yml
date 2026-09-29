@@ -585,6 +585,16 @@ governance:
           license: AGPL-3.0
           category: applications
 
+        BulkVS-DDNS:
+          at: PrPlanIT/BulkVS-DDNS
+          title: "BulkVS DDNS"
+          description:
+            - "Keeps a BulkVS SIP trunk's IP-auth allowlist synced to the site's current public IP."
+            - "DDNS for a BulkVS SIP trunk: watches the site's public IP and reconciles the BulkVS /ipHost allowlist so IP-based trunk auth keeps working across dynamic-WAN changes."
+          topics: [bulkvs, sip-trunk, ddns, voip, kubernetes]
+          license: AGPL-3.0-only
+          category: infrastructure
+
         istio-meshmedic:
           at: PrPlanIT/istio-meshmedic
           title: "Istio MeshMedic"
