@@ -534,6 +534,141 @@ governance:
           license: Apache-2.0
           category: kubernetes
 
+        zitadel:
+          at: HomeLabHD/zitadel
+          # A deviating fork: upstream builds the images via an nx task graph into external
+          # artifacts (its Dockerfiles only COPY prebuilt output); ours build from source, and the
+          # monorepo ships TWO images — the backend (apps/api) and the login-v2 app (apps/login).
+          # builds + publish are restated in full because a repo config: replaces the key, not
+          # merges. Carries the login-v2 project-private-labeling fix (upstream #10692).
+          config:
+            builds:
+              preset: "preset/build-docker.yml"
+              # Override the preset's single 'image' build (the id the uniform stencils reference)
+              # with our backend Dockerfile; repo-root context by default. StageFreight auto-injects
+              # VERSION/COMMIT/BUILD_DATE (the Dockerfile declares those ARGs); zitadel's cmd/build
+              # has no branch var, so BRANCH is deliberately not wired.
+              image:
+                dockerfile: apps/api/Dockerfile
+              # Second image: the login-v2 app. amd64 only — the cluster is x86 and multi-arch
+              # doubles a heavy build for no gain here.
+              login:
+                kind: docker
+                dockerfile: apps/login/Dockerfile
+                platforms: [linux/amd64]
+            publish:
+              # Full restatement of preset/publish-docker.yml (config: key-replaces the section and
+              # we add a second image) PLUS the login image. Every kind:release target keeps
+              # repos: [primary] — github-mirror receives releases via sync, never a release target.
+              stable:
+                kind: registry
+                registry: [dockerhub, ghcr, harbor]
+                build: image
+                tags: ["v{version}", "latest"]
+                when: { git_tags: [stable], events: [tag] }
+              prerelease:
+                kind: registry
+                registry: [dockerhub, ghcr, harbor]
+                build: image
+                tags: ["v{version}"]
+                when: { git_tags: [prerelease], events: [tag] }
+              dev:
+                kind: registry
+                registry: [dockerhub, ghcr, harbor]
+                build: image
+                tags: ["dev-{sha:8}", "latest-dev"]
+                when: { branches: [main], events: [push] }
+                retention: { keep_last: 2 }
+              project-metadata:
+                kind: metadata
+                registry: [dockerhub, harbor]
+                repos: [primary, github-mirror]
+                readme: README.md
+                when: { branches: [main], events: [push, tag] }
+              release:
+                kind: release
+                security_summary: true
+                registry_links: true
+                type: latest
+                repos: [primary]
+                aliases: ["v{version}", "latest"]
+                when: { git_tags: [stable], events: [tag] }
+              prerelease-release:
+                kind: release
+                security_summary: true
+                registry_links: true
+                type: prerelease
+                repos: [primary]
+                when: { git_tags: [prerelease], events: [tag] }
+              dev-release:
+                kind: release
+                security_summary: true
+                registry_links: true
+                type: prerelease
+                repos: [primary]
+                tag: "dev-{sha:8}"
+                aliases: ["latest-dev"]
+                when: { branches: [main], events: [push] }
+                retention: { keep_last: 2 }
+              # ── second image: login → zitadel-login. path overrides the whole {org}/{repo},
+              # split by org alias (hlhd on docker+harbor, homelabhd on ghcr) across the channels. ──
+              login-reg-stable:
+                kind: registry
+                registry: [dockerhub, harbor]
+                build: login
+                path: "{org.docker}/zitadel-login"
+                tags: ["v{version}", "latest"]
+                when: { git_tags: [stable], events: [tag] }
+              login-reg-prerelease:
+                kind: registry
+                registry: [dockerhub, harbor]
+                build: login
+                path: "{org.docker}/zitadel-login"
+                tags: ["v{version}"]
+                when: { git_tags: [prerelease], events: [tag] }
+              login-reg-dev:
+                kind: registry
+                registry: [dockerhub, harbor]
+                build: login
+                path: "{org.docker}/zitadel-login"
+                tags: ["dev-{sha:8}", "latest-dev"]
+                when: { branches: [main], events: [push] }
+                retention: { keep_last: 2 }
+              login-ghcr-stable:
+                kind: registry
+                registry: [ghcr]
+                build: login
+                path: "{org.ghcr}/zitadel-login"
+                tags: ["v{version}", "latest"]
+                when: { git_tags: [stable], events: [tag] }
+              login-ghcr-prerelease:
+                kind: registry
+                registry: [ghcr]
+                build: login
+                path: "{org.ghcr}/zitadel-login"
+                tags: ["v{version}"]
+                when: { git_tags: [prerelease], events: [tag] }
+              login-ghcr-dev:
+                kind: registry
+                registry: [ghcr]
+                build: login
+                path: "{org.ghcr}/zitadel-login"
+                tags: ["dev-{sha:8}", "latest-dev"]
+                when: { branches: [main], events: [push] }
+                retention: { keep_last: 2 }
+            lint:
+              preset: "preset/lint-generic.yml"
+              exclude: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico",
+                        "*.svg", "*.ttf", "*.woff", "*.woff2", "*.pdf",
+                        "apps/docs/**", "console/dist/**", "**/*.pb.go"]
+          title: "Zitadel"
+          description:
+            - "Identity and access management — an OIDC/OAuth2/SAML provider and user-management platform."
+            - "Fork of Zitadel carrying the login-v2 project-private-labeling fix (upstream #10692); the backend and login-v2 images are built from source and published from this repo."
+          topics: [zitadel, identity, oidc, oauth2, saml, iam, sso]
+          license: Apache-2.0
+          category: identity
+
     # A SECOND profile rather than more repos in hlhd-docker: a profile is a credential
     # and identity scope, not a config bundle. PrPlanIT repos live in a different GitLab
     # group (its own write token) and publish under the prplanit registry namespaces, so
