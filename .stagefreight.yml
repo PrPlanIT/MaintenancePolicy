@@ -658,9 +658,19 @@ governance:
                 retention: { keep_last: 2 }
             lint:
               preset: "preset/lint-generic.yml"
+              # exclude replaces the preset's list (sibling key-replace), so the binary
+              # types are restated. Beyond those: generated/vendored trees, plus the
+              # upstream test/fixture/i18n trees this fork builds from but does not ship —
+              # their test-fixture keys and proto doc-comment JWT examples trip the secrets
+              # module (fatal, voids audition), and two i18n files carry zero-width spaces.
               exclude: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico",
                         "*.svg", "*.ttf", "*.woff", "*.woff2", "*.pdf",
-                        "apps/docs/**", "console/dist/**", "**/*.pb.go"]
+                        "apps/docs/**", "console/dist/**", "**/*.pb.go",
+                        "**/*_test.go", "**/*.test.ts",
+                        "apps/login/acceptance/**", "internal/integration/**", "tests/**",
+                        "console/src/assets/i18n/**",
+                        "proto/zitadel/resources/user/v3alpha/authenticator.proto",
+                        "proto/zitadel/user/v2/user_service.proto"]
           title: "Zitadel"
           description:
             - "Identity and access management — an OIDC/OAuth2/SAML provider and user-management platform."
