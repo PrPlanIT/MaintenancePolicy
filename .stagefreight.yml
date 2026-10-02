@@ -668,7 +668,7 @@ governance:
                         "apps/docs/**", "console/dist/**", "**/*.pb.go",
                         "**/*_test.go", "**/*.test.ts",
                         "apps/login/acceptance/**", "internal/integration/**", "tests/**",
-                        "console/src/assets/i18n/**",
+                        "console/src/assets/i18n/**", "internal/static/i18n/**",
                         "proto/zitadel/resources/user/v3alpha/authenticator.proto",
                         "proto/zitadel/user/v2/user_service.proto"]
             # This fork tracks upstream and rebases onto it; it does not own its dependency
