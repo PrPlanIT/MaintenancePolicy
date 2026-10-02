@@ -671,6 +671,14 @@ governance:
                         "console/src/assets/i18n/**",
                         "proto/zitadel/resources/user/v3alpha/authenticator.proto",
                         "proto/zitadel/user/v2/user_service.proto"]
+            # This fork tracks upstream and rebases onto it; it does not own its dependency
+            # posture. remediate: false evaluates deps for visibility (SBOM + vuln reports
+            # still produced) but never runs `go get`, so audition does not auto-bump upstream's
+            # modules into a divergent C′. Upstream dep fixes arrive on rebase. The residual-vuln
+            # gate stays inert (security has no fail_on), so dry-run evaluation does not block.
+            dependency:
+              preset: "preset/dependency.yml"
+              remediate: false
           title: "Zitadel"
           description:
             - "Identity and access management — an OIDC/OAuth2/SAML provider and user-management platform."
