@@ -738,26 +738,6 @@ governance:
           license: AGPL-3.0
           category: applications
 
-        BulkVS-IP-Sync:
-          at: PrPlanIT/BulkVS-IP-Sync
-          title: "BulkVS IP-Sync"
-          description:
-            - "Keeps a BulkVS SIP trunk's IP-auth allowlist synced to the site's current public IP."
-            - "Syncs the BulkVS /ipHost allowlist to the site's public IP so IP-based SIP-trunk auth keeps working across dynamic-WAN changes."
-          topics: [bulkvs, sip-trunk, ddns, voip, kubernetes]
-          license: AGPL-3.0-only
-          category: infrastructure
-
-        istio-meshmedic:
-          at: PrPlanIT/istio-meshmedic
-          title: "Istio MeshMedic"
-          description:
-            - "Diagnoses and repairs Istio service-mesh configuration drift."
-            - "Operator-facing tool that inspects an Istio mesh for misconfiguration and policy drift, and reports or repairs what it finds."
-          topics: [istio, service-mesh, kubernetes, diagnostics]
-          license: MIT
-          category: infrastructure
-
         oh-CI:
           at: PrPlanIT/oh-CI
           title: "oh-CI"
@@ -777,32 +757,6 @@ governance:
           topics: [static-site, nginx, docker]
           license: MIT
           category: infrastructure
-
-        dd-ui:
-          at: PrPlanIT/dd-ui
-          # Deviating: it also publishes a per-branch Harbor image so a branch build can
-          # be pulled before merge. A config: override replaces the whole section, so the
-          # preset is restated and only the extra target added.
-          config:
-            publish:
-              preset: "preset/publish-docker.yml"
-              harbor-branch-dev:
-                kind: registry
-                registry: [harbor]
-                build: image
-                tags: ["test-{branch}-{sha:8}", "latest-test-{branch}"]
-                when: { branches: ["!main"], events: [push] }
-                retention:
-                  keep_last: 6
-                  keep_branches: 10
-            test: { preset: "preset/test-go.yml" }
-          title: "DD-UI"
-          description:
-            - "Web UI for managing Docker hosts and their compose stacks."
-            - "Browser interface over Docker and compose deployments, for inspecting and operating containers across hosts."
-          topics: [docker, ui, web, management]
-          license: AGPL-3.0-only
-          category: applications
 
     # A THIRD profile, sibling to prplanit-docker and on the same PrPlanIT token: these
     # repos build an image AND deploy a Cloudflare Pages site, which prplanit-docker has
@@ -987,9 +941,99 @@ governance:
           license: AGPL-3.0-only
           category: infrastructure
 
+    # Go repos that ship ONLY an image (no CLI binary): identical Go governance to
+    # prplanit-go (scribe-go-docker badges, test-go, flagship lint, go security) but an
+    # image-only publish. Explicit sibling to prplanit-go / prplanit-go-bin so the intent
+    # is trackable in the profile, not per-repo build overrides. builds is set at the
+    # profile level, so members need no per-repo build block.
+    prplanit-go-image:
+      credentials: GITLAB
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        orgs:
+          PrPlanIT:
+            maintainer: "PrPlanIT <precisionplanit@gmail.com>"
+            aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit, ghcr: prplanit }
+        git: { preset: "preset/git.yml" }
+        builds: { preset: "preset/build-docker.yml" }
+        forges: { preset: "preset/forges.yml" }
+        registries: { preset: "preset/registries.yml" }
+        publish: { preset: "preset/publish-docker.yml" }
+        build_cache: { preset: "preset/build_cache.yml" }
+        dependency: { preset: "preset/dependency.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-flagships.yml" }
+        manifest: { preset: "preset/manifest.yml" }
+        release: { preset: "preset/release.yml" }
+        security: { preset: "preset/security.yml" }
+        toolchains: { preset: "preset/toolchains.yml" }
+        test: { preset: "preset/test-go.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"] }
+        scribe: { preset: "preset/scribe-go-docker.yml" }
+
+      repos:
+        BulkVS-IP-Sync:
+          at: PrPlanIT/BulkVS-IP-Sync
+          title: "BulkVS IP-Sync"
+          description:
+            - "Keeps a BulkVS SIP trunk's IP-auth allowlist synced to the site's current public IP."
+            - "Syncs the BulkVS /ipHost allowlist to the site's public IP so IP-based SIP-trunk auth keeps working across dynamic-WAN changes."
+          topics: [bulkvs, sip-trunk, ddns, voip, kubernetes]
+          license: AGPL-3.0-only
+          category: infrastructure
+
+        dd-ui:
+          at: PrPlanIT/dd-ui
+          # Deviating: also publishes a per-branch Harbor image so a branch build can be
+          # pulled before merge. A config: override replaces the whole publish section, so
+          # the preset is restated and only the extra target added. (test-go comes from the
+          # profile now, so the old per-repo test override is dropped.)
+          config:
+            publish:
+              preset: "preset/publish-docker.yml"
+              harbor-branch-dev:
+                kind: registry
+                registry: [harbor]
+                build: image
+                tags: ["test-{branch}-{sha:8}", "latest-test-{branch}"]
+                when: { branches: ["!main"], events: [push] }
+                retention:
+                  keep_last: 6
+                  keep_branches: 10
+          title: "DD-UI"
+          description:
+            - "Web UI for managing Docker hosts and their compose stacks."
+            - "Browser interface over Docker and compose deployments, for inspecting and operating containers across hosts."
+          topics: [docker, ui, web, management]
+          license: AGPL-3.0-only
+          category: applications
+
+        istio-meshmedic:
+          at: PrPlanIT/istio-meshmedic
+          title: "Istio MeshMedic"
+          description:
+            - "Diagnoses and repairs Istio service-mesh configuration drift."
+            - "Operator-facing tool that inspects an Istio mesh for misconfiguration and policy drift, and reports or repairs what it finds."
+          topics: [istio, service-mesh, kubernetes, diagnostics]
+          license: MIT
+          category: infrastructure
+
+        zitadel-flatroles:
+          at: PrPlanIT/zitadel-flatroles
+          title: "Zitadel FlatRoles"
+          description:
+            - "Zitadel Actions v2 target that flattens granted roles into a flat roles token claim."
+            - "HTTP target Zitadel calls on preuserinfo/preaccesstoken; returns a de-duplicated flat roles claim the kube-apiserver maps to groups."
+          topics: [zitadel, oidc, kubernetes, authentication]
+          license: MIT
+          category: infrastructure
+
     # Binary-only: same policy as prplanit-go, minus every registry target. No image is
     # published here for now, so the repo ships archives and releases and nothing else.
-    prplanit-bin:
+    prplanit-go-bin:
       credentials: GITLAB
       config:
         version: 1
@@ -1031,7 +1075,7 @@ governance:
                 env: { CGO_ENABLED: "0" }
                 args: ["-ldflags", "-s -w -X github.com/PrPlanIT/CryoSheep/src/version.Version={version} -X github.com/PrPlanIT/CryoSheep/src/version.Commit={sha} -X github.com/PrPlanIT/CryoSheep/src/version.BuildDate={date}"]
                 platforms: [linux/amd64, linux/arm64]
-            # prplanit-bin carries no test preset, and this is a tool whose whole
+            # prplanit-go-bin carries no test preset, and this is a tool whose whole
             # argument over a templated script is that its ordering, gates and
             # timeouts can be tested without a hypervisor or a UPS.
             test: { preset: "preset/test-go.yml" }
