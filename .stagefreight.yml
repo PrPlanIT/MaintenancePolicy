@@ -1300,6 +1300,48 @@ governance:
       repos:
         dungeon:
           at: SoFMeRight/dungeon
+          # Irreducibly per-repo: perform and publish must land on the in-cluster
+          # runner, because perform converges the fleet over SSH and publish reads the
+          # cluster for the inventory region. On a generic runner perform finds no
+          # reconcile target and scribe reports no kubeconfig available, both silently.
+          config:
+            ci:
+              routing:
+                perform:
+                  labels: [k8s-dungeon-production]
+                publish:
+                  labels: [k8s-dungeon-production]
+            gitops:
+              dungeon:
+                backend: flux
+                endpoint: https://172.22.144.105:6443
+                exposure:
+                  - level: internet
+                    gateways: [cell-membrane-gateway]
+                  - level: intranet
+                    gateways: [phloem-gateway, xylem-gateway]
+                  - level: cluster
+                    service_types: [ClusterIP]
+                  - level: intranet
+                    service_types: [NodePort]
+                oidc:
+                  audience: stagefreight
+            ansible:
+              image: ghcr.io/homelabhd/ansible:v2.21.6
+              inventory: ansible/inventory
+              ssh:
+                user: kai
+                credentials: DUNGEON
+                known_hosts: ansible/known_hosts
+              playbooks:
+                provision-hosts:
+                  path: ansible/k8s/provision-hosts.yml
+                  groups: [k8s_worker, k8s_master]
+                  converge: true
+                kubelet-provision:
+                  path: ansible/k8s/kubelet-provision.yml
+                  groups: [k8s_master, k8s_worker]
+                  converge: true
           title: "Dungeon"
           description:
             - "GitOps state for the dungeon Kubernetes cluster and its Docker hosts."
