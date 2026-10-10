@@ -1305,7 +1305,11 @@ governance:
           # cluster for the inventory region. On a generic runner perform finds no
           # reconcile target and scribe reports no kubeconfig available, both silently.
           config:
+            # The override merge is shallow — a key given here replaces the profile's
+            # entirely — so ci: restates forge and image alongside routing.
             ci:
+              forge: [gitlab]
+              image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
               routing:
                 perform:
                   labels: [k8s-dungeon-production]
@@ -1342,6 +1346,62 @@ governance:
                   path: ansible/k8s/kubelet-provision.yml
                   groups: [k8s_master, k8s_worker]
                   converge: true
+            # stencils restates the profile's presets for the same shallow-merge reason:
+            # the three notification stencils below are dungeon's own (they name its LLM),
+            # so they cannot live in a shared preset.
+            stencils:
+              presets:
+                - preset/stencils-base.yml
+                - preset/stencils-status.yml
+                - preset/stencils-pipeline.yml
+                - preset/stencils-gitops.yml
+              ci-detail:
+                type: text
+                body: |
+                  {commit_title}
+                  {status} · {project} {ref}
+                  Failed in {failure.subsystem} — {failure.reason}
+                  {failures}
+                  Converged {reconcile.succeeded}/{reconcile.total} {reconcile.units} on {reconcile.cluster}
+                  Commits since {changelog.range} — {changelog.count}
+              triage:
+                type: llm
+                llm: glicynia
+                body: |
+                  {ci-detail}
+
+                  In 2-3 sentences: which kustomizations broke, the likely cause, and the
+                  first thing to check on the cluster.
+              recap:
+                type: llm
+                llm: glicynia
+                body: |
+                  {summary}
+
+                  In one or two sentences, recap this GitOps reconcile for a team chat —
+                  plain and direct, lead with what converged. No markdown, no preamble.
+            llms:
+              glicynia:
+                provider: ollama
+                url: http://glicynia:11434
+                model: deepseek-r1:1.5b
+            notifications:
+              phone:
+                provider: ntfy
+                url: https://ntfy.pcfae.com/Dungeon-CI
+                credentials: NTFY
+              triage:
+                provider: ntfy
+                url: https://ntfy.pcfae.com/Dungeon-CI
+                credentials: NTFY
+                body: "{triage}"
+                when: {outcomes: [failure]}
+              recap:
+                provider: ntfy
+                url: https://ntfy.pcfae.com/Dungeon-CI
+                credentials: NTFY
+                body: "🤖 {recap}"
+                when: {outcomes: [success]}
           title: "Dungeon"
           description:
             - "GitOps state for the dungeon Kubernetes cluster and its Docker hosts."
