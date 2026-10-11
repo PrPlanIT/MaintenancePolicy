@@ -319,7 +319,7 @@ governance:
           title: "Frappe Bench"
           description:
             - "ERPNext with HR, CRM, and helpdesk, built as one container image."
-            - "Frappe bench image bundling ERPNext, HRMS, telephony, and helpdesk on the v15 framework."
+            - "Frappe bench image bundling ERPNext, HRMS, CRM, telephony, and helpdesk."
           topics: [erpnext, frappe, erp, hrms, helpdesk, docker]
           license: GPL-3.0
           category: applications
