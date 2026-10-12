@@ -1299,6 +1299,28 @@ governance:
                     service_types: [ClusterIP]
                   - level: intranet
                     service_types: [NodePort]
+                categories:
+                  - { name: Administrative, namespaces: [zeldas-lullaby] }
+                  - { name: DNS & NTP, namespaces: [compass] }
+                  - { name: Routing Infrastructure, namespaces: [king-of-red-lions] }
+                  - { name: Storage Services, namespaces: [gorons-bracelet] }
+                  - { name: Backup Services, namespaces: [fairy-bottle] }
+                  - { name: Monitoring, namespaces: [gossip-stone] }
+                  - { name: Security & IDS, tier: app, namespaces: [lens-of-truth] }
+                  - { name: Bot Protection, tier: app, namespaces: [wallmaster] }
+                  - { name: Internal Trust, namespaces: [gerudo-crest] }
+                  - { name: Business Gateway, namespaces: [hyrule-castle] }
+                  - { name: Personal Gateway, namespaces: [kokiri-forest] }
+                  - { name: Internal Gateway, namespaces: [arylls-lookout] }
+                  - { name: Archival & Media, tier: app, namespaces: [temple-of-time] }
+                  - { name: Discovery & Dashboards, tier: app, namespaces: [lost-woods] }
+                  - { name: Downloads & Arr, tier: app, namespaces: [swift-sail] }
+                  - { name: Game Servers, tier: app, namespaces: [shooting-gallery] }
+                  - { name: Mail Services, tier: app, namespaces: [delivery-bag] }
+                  - { name: Remote Management, tier: app, namespaces: [hookshot] }
+                  - { name: Tools & Utilities, tier: app, namespaces: [tingle-tuner] }
+                  - { name: Privileged Services, namespaces: [pedestal-of-time] }
+                  - { name: Platform, tier: platform, namespaces: [kube-system, flux-system, istio-system, cert-manager] }
                 oidc:
                   audience: stagefreight
             ansible:
