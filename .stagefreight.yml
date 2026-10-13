@@ -1315,13 +1315,14 @@ governance:
                 categories:
                   - { name: Administrative, namespaces: [zeldas-lullaby] }
                   - { name: DNS & NTP, namespaces: [compass] }
-                  - { name: Routing Infrastructure, namespaces: [king-of-red-lions] }
+                  - { name: Routing Infrastructure, namespaces: [king-of-red-lions, prelude-of-light, farores-wind] }
                   - { name: Storage Services, namespaces: [gorons-bracelet] }
                   - { name: Backup Services, namespaces: [fairy-bottle] }
-                  - { name: Monitoring, namespaces: [gossip-stone] }
+                  - { name: Monitoring, namespaces: [gossip-stone, lakitu] }
                   - { name: Security & IDS, tier: app, namespaces: [lens-of-truth] }
                   - { name: Bot Protection, tier: app, namespaces: [wallmaster] }
                   - { name: Internal Trust, namespaces: [gerudo-crest] }
+                  - { name: Policy Enforcement, tier: platform, namespaces: [mr-resetti] }
                   - { name: Business Gateway, namespaces: [hyrule-castle] }
                   - { name: Personal Gateway, namespaces: [kokiri-forest] }
                   - { name: Internal Gateway, namespaces: [arylls-lookout] }
