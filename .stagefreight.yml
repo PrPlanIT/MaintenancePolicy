@@ -1293,8 +1293,21 @@ governance:
                 exposure:
                   - level: internet
                     gateways: [cell-membrane-gateway]
+                    endpoints:
+                      - 172.22.30.71:80      # cell-membrane gateway
+                      - 172.22.30.71:443
+                      - 172.22.30.231:8211   # palworld
+                      - 172.22.30.231:27015
+                      - 172.22.30.231:35566  # minecraft
+                      - 172.22.30.231:8777   # ark sa
+                      - 172.22.30.231:8778
+                      - 172.22.30.231:28020
+                      - 172.22.30.86:3478    # netbird turn
+                      - 172.22.30.87:3479    # matrix turn
+                      - 172.22.30.102:25     # ntfy smtp
                   - level: intranet
                     gateways: [phloem-gateway, xylem-gateway]
+                    cidrs: [172.22.30.0/24]
                   - level: cluster
                     service_types: [ClusterIP]
                   - level: intranet
