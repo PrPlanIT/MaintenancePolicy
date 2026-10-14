@@ -249,13 +249,12 @@ governance:
                   # carefully everything else is pinned.
                   PYTHON_VERSION: "3.14.2"
                   NODE_VERSION: "24.13.0"
-                  # The framework tracks its series branch instead of a release tag, so
-                  # patches arrive without an edit here. Nothing in the pipeline watches
-                  # these values — a tag would sit at whatever it was set to until someone
-                  # noticed, which for the framework is the component least worth freezing.
-                  # The cost is that a rebuild is not byte-identical, and the series alias
-                  # this publishes under is exactly what stays true regardless.
-                  FRAPPE_BRANCH: version-16
+                  # A release tag, like the apps in apps.json: a build is only trustworthy
+                  # if it is reproducible, and a moving branch pulls whatever upstream
+                  # pushed last. The framework moves with the apps, as one tested set.
+                  # telephony is the one exception — upstream publishes no tags, and bench
+                  # fetches by branch or tag name only — so it alone follows develop.
+                  FRAPPE_BRANCH: v16.51.0
             publish:
               preset: "preset/publish-docker.yml"
               # Series aliases, added to the shared targets. This repo's own version names
