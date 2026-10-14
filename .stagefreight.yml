@@ -476,11 +476,17 @@ governance:
           # A deviating fork: main is the upstream release plus driver fixes not yet released
           # upstream (eaton_pw_nm2/eaton_pxg_ups shutdown.return OID, upstream #1571), and the
           # image builds from this tree. It tracks upstream and rebases onto it, so it does not
-          # own its dependency posture.
+          # own its dependency posture. Upstream's .travis.yml references an undefined anchor
+          # (_matrix_freebsd_gnustd_warn), a YAML parse error; it is excluded from yaml lint only.
           config:
             dependency:
               preset: "preset/dependency.yml"
               remediate: false
+            lint:
+              preset: "preset/lint-generic.yml"
+              modules:
+                yaml:
+                  exclude: [".travis.yml"]
           title: "Network UPS Tools"
           description:
             - "Network UPS Tools drivers, upsd and optional upsmon, rootless."
