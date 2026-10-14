@@ -1312,28 +1312,31 @@ governance:
                     service_types: [ClusterIP]
                   - level: intranet
                     service_types: [NodePort]
+                inventory:
+                  groups:
+                    from: { annotation: gatus.home-operations.com/endpoint, field: group }
                 categories:
-                  - { name: Administrative, namespaces: [zeldas-lullaby] }
-                  - { name: DNS & NTP, namespaces: [compass] }
+                  - { name: "Administration (Zelda's Lullaby🎵)", namespaces: [zeldas-lullaby] }
+                  - { name: "DNS & Network (Compass🧭)", namespaces: [compass] }
                   - { name: Routing Infrastructure, namespaces: [king-of-red-lions, prelude-of-light, farores-wind] }
-                  - { name: Storage Services, namespaces: [gorons-bracelet] }
+                  - { name: "Storage (Goron's Bracelet💪)", namespaces: [gorons-bracelet] }
                   - { name: Backup Services, namespaces: [fairy-bottle] }
-                  - { name: Monitoring, namespaces: [gossip-stone, lakitu] }
-                  - { name: Security & IDS, tier: app, namespaces: [lens-of-truth] }
-                  - { name: Bot Protection, tier: app, namespaces: [wallmaster] }
+                  - { name: "Observability (Gossip Stone💬)", namespaces: [gossip-stone, lakitu] }
+                  - { name: "Security & IoT (Lens of Truth🔍)", tier: app, namespaces: [lens-of-truth] }
+                  - { name: "Bot Protection (Wallmaster🖐️)", tier: app, namespaces: [wallmaster] }
                   - { name: Internal Trust, namespaces: [gerudo-crest] }
                   - { name: Policy Enforcement, tier: platform, namespaces: [mr-resetti] }
-                  - { name: Business Gateway, namespaces: [hyrule-castle] }
-                  - { name: Personal Gateway, namespaces: [kokiri-forest] }
-                  - { name: Internal Gateway, namespaces: [arylls-lookout] }
-                  - { name: Archival & Media, tier: app, namespaces: [temple-of-time] }
-                  - { name: Discovery & Dashboards, tier: app, namespaces: [lost-woods] }
-                  - { name: Downloads & Arr, tier: app, namespaces: [swift-sail] }
-                  - { name: Game Servers, tier: app, namespaces: [shooting-gallery] }
-                  - { name: Mail Services, tier: app, namespaces: [delivery-bag] }
-                  - { name: Remote Management, tier: app, namespaces: [hookshot] }
-                  - { name: Tools & Utilities, tier: app, namespaces: [tingle-tuner] }
-                  - { name: Privileged Services, namespaces: [pedestal-of-time] }
+                  - { name: "Business Apps (Hyrule Castle🏰)", namespaces: [hyrule-castle] }
+                  - { name: "Personal Sites (Kokiri Forest🌿)", namespaces: [kokiri-forest] }
+                  - { name: "Infrastructure (Aryll's Lookout🔭)", namespaces: [arylls-lookout] }
+                  - { name: "Content & Media (Temple of Time🏛️)", tier: app, namespaces: [temple-of-time] }
+                  - { name: "Discovery & Dashboards (Lost Woods🌲)", tier: app, namespaces: [lost-woods] }
+                  - { name: "Downloads & Media (Swift Sail⛵)", tier: app, namespaces: [swift-sail] }
+                  - { name: "Game Servers (Shooting Gallery🎯)", tier: app, namespaces: [shooting-gallery] }
+                  - { name: "Notifications (Delivery Bag📬)", tier: app, namespaces: [delivery-bag] }
+                  - { name: "Remote Access (Hookshot🪝)", tier: app, namespaces: [hookshot] }
+                  - { name: "Tools & Utilities (Tingle Tuner🔧)", tier: app, namespaces: [tingle-tuner] }
+                  - { name: "Private Apps (Pedestal of Time⚔️)", namespaces: [pedestal-of-time] }
                   - { name: Platform, tier: platform, namespaces: [kube-system, flux-system, istio-system, cert-manager] }
                 oidc:
                   audience: stagefreight
