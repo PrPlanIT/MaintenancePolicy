@@ -222,6 +222,15 @@ governance:
               # Without the submodule the context directory is empty and the build
               # fails on a missing Containerfile rather than on the checkout it skipped.
               submodules: true
+            # The bundled apps arrive through bench, not a Dockerfile pip line, so they are
+            # read from what scanning the image detected.
+            stencils:
+              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
+              contents-apps: { type: contents, build: image, section: detected.pip, render: badges, include: [frappe, erpnext, hrms, crm, helpdesk, telephony] }
+            scribe:
+              preset: "preset/scribe-docker.yml"
+              files:
+                readme.contents.apps: { file: "README.md", between: ["<!-- sf:contents-apps:start -->", "<!-- sf:contents-apps:end -->"], items: [contents-apps] }
             builds:
               image:
                 kind: docker
