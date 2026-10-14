@@ -463,6 +463,24 @@ governance:
           license: ISC
           category: monitoring
 
+        nut:
+          at: HomeLabHD/nut
+          # A deviating fork: main is the upstream release plus driver fixes not yet released
+          # upstream (eaton_pw_nm2/eaton_pxg_ups shutdown.return OID, upstream #1571), and the
+          # image builds from this tree. It tracks upstream and rebases onto it, so it does not
+          # own its dependency posture.
+          config:
+            dependency:
+              preset: "preset/dependency.yml"
+              remediate: false
+          title: "Network UPS Tools"
+          description:
+            - "Network UPS Tools drivers, upsd and optional upsmon, rootless."
+            - "Fork of Network UPS Tools carrying driver fixes ahead of upstream releases (Eaton shutdown.return, upstream #1571). The image ships USB, serial, SNMP and NetXML drivers with upsd; upsmon runs only when its config is supplied. Runs as uid 65532 with no setuid binaries, no package manager and a read-only root filesystem."
+          topics: [nut, ups, usb, snmp, power, docker]
+          license: GPL-2.0-or-later
+          category: infrastructure
+
         weave-gitops:
           at: HomeLabHD/weave-gitops
           # A deviating entry: a fork carrying upstream's 302M website/ tree, which the
