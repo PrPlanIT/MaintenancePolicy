@@ -1388,6 +1388,10 @@ governance:
                   path: ansible/k8s/kubelet-provision.yml
                   groups: [k8s_master, k8s_worker]
                   converge: true
+                wazuh-agent:
+                  path: ansible/services/wazuh-agent.yaml
+                  groups: [k8s_master, k8s_worker]
+                  converge: true
             # stencils restates the profile's presets for the same shallow-merge reason:
             # the three notification stencils below are dungeon's own (they name its LLM),
             # so they cannot live in a shared preset.
