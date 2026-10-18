@@ -1373,7 +1373,7 @@ governance:
                 oidc:
                   audience: stagefreight
             ansible:
-              image: ghcr.io/homelabhd/ansible:v2.21.6
+              image: ghcr.io/homelabhd/ansible:v2.21.5
               inventory: ansible/inventory
               ssh:
                 user: kai
