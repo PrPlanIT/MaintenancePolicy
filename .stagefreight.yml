@@ -659,6 +659,26 @@ governance:
                 tags: ["dev-{sha:8}", "latest-dev"]
                 when: { branches: [main], events: [push] }
                 retention: { keep_last: 2 }
+              # project-metadata writes the overview of {path.<registry>}, the backend's repo;
+              # the login repo needs its own target on its own path.
+              login-metadata:
+                kind: metadata
+                registry: [dockerhub, harbor]
+                path: "{org.docker}/zitadel-login"
+                readme: README.md
+                when: { branches: [main], events: [push, tag] }
+            # {path.<registry>} resolves the repo's one path per surface, so the login image's
+            # row names its package explicitly.
+            stencils:
+              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
+              login-ghcr:   { render: shield, label: GHCR, message: "{org.ghcr}/zitadel-login", color: "#181717", logo: github, logo_color: white, link: "https://github.com/{path.github}/pkgs/container/zitadel-login" }
+              login-docker: { render: shield, label: Docker, message: "{org.docker}/zitadel-login", color: "#2496ED", logo: docker, logo_color: white, link: "https://hub.docker.com/r/{org.docker}/zitadel-login" }
+              login-pulls:  { render: shield, label: pulls, shield: "docker/pulls/{org.docker}/zitadel-login?color=1d63ed&logo=docker&logoColor=white", link: "https://hub.docker.com/r/{org.docker}/zitadel-login" }
+              login-harbor: { render: shield, label: Harbor, message: "{org.docker}/zitadel-login", color: "#60b932", link: "https://cr.pcfae.com/harbor/projects" }
+            scribe:
+              preset: "preset/scribe-docker.yml"
+              files:
+                readme.image-login: { file: "README.md", between: ["<!-- sf:image-login:start -->", "<!-- sf:image-login:end -->"], items: [login-ghcr, login-docker, login-pulls, login-harbor] }
             lint:
               preset: "preset/lint-generic.yml"
               # exclude replaces the preset's list (sibling key-replace), so the binary
