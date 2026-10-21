@@ -855,6 +855,38 @@ governance:
           license: MIT
           category: websites
 
+    # Documentation repos: no build. Same badges, metadata push and mirror sync as every
+    # other repo; image mode with no builds reports build not_applicable and runs the rest.
+    prplanit-docs:
+      credentials: GITLAB
+
+      config:
+        version: 1
+        ci:
+          forge: [gitlab]
+          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+        orgs:
+          PrPlanIT:
+            maintainer: "PrPlanIT <precisionplanit@gmail.com>"
+            aliases: { handle: prplanit, github: PrPlanIT, docker: prplanit, ghcr: prplanit }
+        git: { preset: "preset/git.yml" }
+        forges: { preset: "preset/forges.yml" }
+        commit: { preset: "preset/commit.yml" }
+        lint: { preset: "preset/lint-generic.yml" }
+        stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-pipeline.yml"] }
+        scribe: { preset: "preset/scribe-governance.yml" }
+
+      repos:
+        SOPs:
+          at: PrPlanIT/SOPs
+          title: "Standard Operating Procedures"
+          description:
+            - "Our declared intent and preferences for how we execute repeated processes and maintain systems."
+            - "Exactly what SOPs are by definition: our declared intent and preferences for how we execute repeated processes/procedures and maintain systems within our environment. Served as a wiki through Wiki.js git sync."
+          topics: [sops, documentation, wiki, operations]
+          license: AGPL-3.0-only
+          category: infrastructure
+
     # Go repos that ship an image AND a CLI. Same PrPlanIT token; the split from
     # prplanit-docker is the binary half -- archives, and releases that carry them.
     prplanit-go:
