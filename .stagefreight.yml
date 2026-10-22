@@ -321,7 +321,7 @@ governance:
                   # Refreshing the mirrors tracks upstream; changing these ships it.
                   HUBZILLA_REF: "11.4.1"
                   ADDONS_REF: "11.4.1"
-                  PHP_VERSION: "8.3"
+                  PHP_VERSION: "8.3.36"
             publish:
               preset: "preset/publish-docker.yml"
               # The series alias is a literal and nothing ties it to the refs above, so
