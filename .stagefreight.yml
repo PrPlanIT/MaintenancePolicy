@@ -886,6 +886,15 @@ governance:
           topics: [sops, documentation, wiki, operations]
           license: AGPL-3.0-only
           category: infrastructure
+        Happy-Mask-Shop:
+          at: PrPlanIT/Happy-Mask-Shop
+          title: "Happy Mask Shop"
+          description:
+            - "SoFMeRight's SysEggplant themes: one palette, worn by every app we look at all day."
+            - "SysEggplant themes for Discord, browsers, self-hosted web apps and desktop tools: Stylus userstyles, app themes and Discord QuickCSS, each self-contained with its assets embedded and its history dated to when it was made."
+          topics: [themes, userstyles, stylus, syseggplant, customization]
+          license: AGPL-3.0-only
+          category: utilities
 
     # Go repos that ship an image AND a CLI. Same PrPlanIT token; the split from
     # prplanit-docker is the binary half -- archives, and releases that carry them.
