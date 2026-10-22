@@ -890,8 +890,8 @@ governance:
           at: PrPlanIT/Happy-Mask-Shop
           title: "Happy Mask Shop"
           description:
-            - "A gallery of PrPlanIT's themes for everyday apps, each ready to install."
-            - "Themes for Discord, browsers, self-hosted web apps and desktop tools: Stylus userstyles, app themes and Discord QuickCSS, each self-contained with its assets embedded and its history dated to when it was made."
+            - "A collection of themes for apps and services, available for anyone to use and modify."
+            - "A collection of themes for apps and services we have encountered in our environment, available for anyone to use and modify."
           topics: [themes, userstyles, stylus, syseggplant, customization]
           license: AGPL-3.0-only
           category: utilities
