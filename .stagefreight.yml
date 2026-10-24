@@ -881,7 +881,16 @@ governance:
         git: { preset: "preset/git.yml" }
         forges: { preset: "preset/forges.yml" }
         commit: { preset: "preset/commit.yml" }
-        lint: { preset: "preset/lint-generic.yml" }
+        lint:
+          preset: "preset/lint-generic.yml"
+          modules:
+            # Wiki docs: escalate only internal — a target file either exists or it
+            # does not, so it is the one class certain enough to fail the build.
+            # anchors ride the warn default (heading-slug matching is renderer-
+            # dependent); external stays off by default (no network checks).
+            links:
+              enabled: true
+              internal: error
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-pipeline.yml"] }
         scribe: { preset: "preset/scribe-governance.yml" }
 
