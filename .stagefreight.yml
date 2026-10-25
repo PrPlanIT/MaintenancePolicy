@@ -487,6 +487,7 @@ governance:
           # image builds from this tree. It tracks upstream and rebases onto it, so it does not
           # own its dependency posture. Upstream's .travis.yml references an undefined anchor
           # (_matrix_freebsd_gnustd_warn), a YAML parse error; it is excluded from yaml lint only.
+          # bin is a Debian trixie host build for the Proxmox hosts; snmp-ups needs the host's libsnmp40t64.
           config:
             dependency:
               preset: "preset/dependency.yml"
@@ -496,6 +497,29 @@ governance:
               modules:
                 yaml:
                   exclude: [".travis.yml"]
+            builds:
+              preset: "preset/build-docker.yml"
+              bin:
+                kind: command
+                image: docker.io/library/debian:trixie@sha256:4c25275446ca371766b8b093c696782eabce06263fccacb8d5d813b3dc44b308
+                platforms: [linux/amd64]
+                command: >-
+                  set -e;
+                  export DEBIAN_FRONTEND=noninteractive;
+                  apt-get update -qq;
+                  apt-get install -y -qq --no-install-recommends build-essential autoconf automake libtool pkg-config python3 libsnmp-dev libssl-dev;
+                  ./autogen.sh;
+                  ./configure --prefix=/usr --sysconfdir=/etc/nut --with-statepath=/run/nut --with-altpidpath=/run/nut
+                  --with-drivers=snmp-ups --with-snmp --without-usb --without-serial --without-neon --without-nut-scanner
+                  --without-cgi --without-dev --without-docs --without-python --without-python2 --without-python3
+                  --disable-shared --enable-static;
+                  make -j"$(nproc)";
+                  rm -rf host-dist;
+                  make install DESTDIR="$PWD/host-dist";
+                  rm -rf host-dist/usr/lib host-dist/usr/local host-dist/usr/bin/nutconf
+                outputs:
+                  - { type: tree, source: host-dist }
+            publish: { preset: "preset/publish-docker-binary.yml" }
           title: "Network UPS Tools"
           description:
             - "Network UPS Tools drivers, upsd and optional upsmon, rootless."
