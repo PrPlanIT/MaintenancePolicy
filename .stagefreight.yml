@@ -1201,6 +1201,20 @@ governance:
           # wine image. The archive names are the product name, not the slug, so the
           # publish section is restated with its own naming.
           config:
+            # The AutoHotkey releases (beta_v0.6xx, proto_v0.60x) are their own tag source,
+            # rendered as tagged. Until the Go port is GA, GitHub shows only them, on the
+            # frozen v0.6.x-autohotkey branch.
+            git:
+              preset: "preset/git.yml"
+              tags:
+                original: { pattern: "^(beta|proto)_v\\d+\\.\\d+$" }
+            repos:
+              github-mirror:
+                branches: { default: v0.6.x-autohotkey }
+                sync:
+                  branches: { scope: all, prune: true }
+                  tags: { scope: all, prune: true }
+                  releases: { scope: all, prune: true, only: [original] }
             builds:
               dwiz:
                 kind: binary
