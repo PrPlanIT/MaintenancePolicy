@@ -1,4 +1,5 @@
 toolchains:
+  update: true
   want:
     trivy: "0.x"
     syft: "1.x"
