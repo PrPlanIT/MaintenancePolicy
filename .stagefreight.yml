@@ -114,7 +114,7 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         scribe: { preset: "preset/scribe-docker.yml" }
 
@@ -201,6 +201,7 @@ governance:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"]
             scribe: { preset: "preset/scribe-go-docker.yml" }
             test: { preset: "preset/test-go.yml" }
+            toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
           title: "echoip"
           description:
             - "Self-hosted service for looking up your own public IP address."
@@ -777,7 +778,7 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         scribe: { preset: "preset/scribe-docker.yml" }
 
@@ -842,7 +843,7 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         # scribe-site, not scribe-docker: a site's image goes to harbor + ghcr only, so
         # the docker/pulls badges would report a pull count for a repository nothing was
@@ -962,7 +963,7 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
         test: { preset: "preset/test-go.yml" }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"] }
         scribe: { preset: "preset/scribe-go-docker.yml" }
@@ -1075,7 +1076,7 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
         test: { preset: "preset/test-go.yml" }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"] }
         scribe: { preset: "preset/scribe-go-docker.yml" }
@@ -1161,7 +1162,7 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-go.yml"] }
         scribe: { preset: "preset/scribe-go.yml" }
 
@@ -1273,7 +1274,7 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         scribe: { preset: "preset/scribe-site.yml" }
 
@@ -1399,7 +1400,7 @@ governance:
         lint: { preset: "preset/lint-generic.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-gitops.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-pipeline.yml", "preset/stencils-gitops.yml"] }
         scribe: { preset: "preset/scribe-gitops.yml" }
 
@@ -1590,7 +1591,7 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
-        toolchains: { preset: "preset/toolchains.yml" }
+        toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         scribe: { preset: "preset/scribe-docker.yml" }
 
