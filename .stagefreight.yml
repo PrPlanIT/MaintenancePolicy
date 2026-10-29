@@ -413,6 +413,38 @@ governance:
                   # rebuild — which is why the set is decided up front.
                   S3_PROVIDER_VERSION: "1.7.0"
                   HTTP_ANTISPAM_VERSION: "0.5.1"
+            # Auto-bump the base image: discover element-hq/synapse's tags through the ghcr
+            # pull-through proxy (Harbor creds) and move the FROM tag+digest when a GA ships.
+            dependency:
+              preset: "preset/dependency.yml"
+              registry: ghcr-proxy
+            # Fork-mode guarding: watch element-hq/synapse's GA releases, refuse a release tag
+            # Synapse never published, and prove the built image actually contains that version.
+            upstream:
+              sources:
+                synapse:
+                  image: ghcr.io/element-hq/synapse
+                  scheme: semver
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                    prereleases: false
+              version:
+                track: synapse
+                on_mismatch: refuse
+              evidence:
+                image:
+                  probe:
+                    package: matrix-synapse
+                    manager: pip
+                  on_mismatch: refuse
+            # Automatic update cadence: a daily scheduled run watches upstream and bumps the
+            # base. build: changes means the schedule publishes nothing itself — the bump it
+            # commits starts its own pipeline, which builds and publishes.
+            schedules:
+              upstream-refresh:
+                cron: "17 11 * * *"
+                build: changes
+                reason: "Daily watch of element-hq/synapse; auto-bump the base on a new GA."
           title: "Synapse"
           description:
             - "Synapse with S3 media offload and the antispam hook, hardened and rootless."
