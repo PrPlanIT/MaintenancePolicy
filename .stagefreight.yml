@@ -413,11 +413,12 @@ governance:
                   # rebuild — which is why the set is decided up front.
                   S3_PROVIDER_VERSION: "1.7.0"
                   HTTP_ANTISPAM_VERSION: "0.5.1"
-            # Auto-bump the base image: discover element-hq/synapse's tags through the ghcr
-            # pull-through proxy (Harbor creds) and move the FROM tag+digest when a GA ships.
+            # Auto-bump the base image: discover element-hq/synapse's tags from ghcr.io
+            # directly — the base's own canonical registry, anonymously — and move the FROM
+            # tag+digest when a GA ships. A pull-through proxy is a pull mirror, not an
+            # enumeration surface: it can't list upstream tags it hasn't already cached.
             dependency:
               preset: "preset/dependency.yml"
-              registry: ghcr-proxy
             # Fork-mode guarding: watch element-hq/synapse's GA releases, refuse a release tag
             # Synapse never published, and prove the built image actually contains that version.
             upstream:
