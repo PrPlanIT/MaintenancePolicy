@@ -1601,9 +1601,9 @@ governance:
                 when: {outcomes: [success]}
           title: "Dungeon"
           description:
-            - "GitOps state for the dungeon Kubernetes cluster and its Docker hosts."
-            - "The cluster's source of truth: Flux manifests, Ansible automation and compose stacks for every service running on the estate."
-          topics: [gitops, kubernetes, fluxcd, ansible, homelab]
+            - "Source of truth for the Dungeon Kubernetes cluster and the Ad_Arbitorium Proxmox cluster."
+            - "This repository seeks to be the source of truth regarding the active state of my Kubernetes cluster \"Dungeon\" and my Proxmox Cluster \"Ad_Arbitorium\". All system state, automation routines, and backup strategies should be declared within this repository."
+          topics: [gitops, kubernetes, fluxcd, proxmox, ansible, docker-compose, backups, homelab]
           license: GPL-3.0-only
           category: infrastructure
 
