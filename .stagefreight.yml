@@ -1,7 +1,7 @@
 version: 1
 
 ci:
-  image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+  image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
 
 # The control repo runs in governance mode: its own pipeline reconciles the profiles
 # below into their satellites (rather than building an image). Governance activation is
@@ -97,7 +97,7 @@ governance:
           # .stagefreight.yml, so distributing the config without it leaves every
           # satellite self-inconsistent and audition rejects the run as stale CI.
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           HomeLabHD:
             maintainer: "HomeLabHD <homelabhelp@gmail.com>"
@@ -741,7 +741,7 @@ governance:
               login-ghcr:   { render: shield, label: GHCR, message: "{org.ghcr}/zitadel-login", color: "#181717", logo: github, logo_color: white, link: "https://github.com/{path.github}/pkgs/container/zitadel-login" }
               login-docker: { render: shield, label: Docker, message: "{org.docker}/zitadel-login", color: "#2496ED", logo: docker, logo_color: white, link: "https://hub.docker.com/r/{org.docker}/zitadel-login" }
               login-pulls:  { render: shield, label: pulls, shield: "docker/pulls/{org.docker}/zitadel-login?color=1d63ed&logo=docker&logoColor=white", link: "https://hub.docker.com/r/{org.docker}/zitadel-login" }
-              login-harbor: { render: shield, label: Harbor, message: "{org.docker}/zitadel-login", color: "#60b932", link: "https://cr.pcfae.com/harbor/projects" }
+              login-harbor: { render: shield, label: Harbor, message: "{org.docker}/zitadel-login", color: "#60b932", link: "https://cr.optcp.com/harbor/projects" }
             scribe:
               preset: "preset/scribe-docker.yml"
               files:
@@ -794,7 +794,7 @@ governance:
         version: 1
         ci:
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           PrPlanIT:
             maintainer: "PrPlanIT <precisionplanit@gmail.com>"
@@ -859,7 +859,7 @@ governance:
         version: 1
         ci:
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           PrPlanIT:
             maintainer: "PrPlanIT <precisionplanit@gmail.com>"
@@ -931,7 +931,7 @@ governance:
         version: 1
         ci:
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           PrPlanIT:
             maintainer: "PrPlanIT <precisionplanit@gmail.com>"
@@ -980,7 +980,7 @@ governance:
         version: 1
         ci:
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           PrPlanIT:
             maintainer: "PrPlanIT <precisionplanit@gmail.com>"
@@ -1092,7 +1092,7 @@ governance:
         version: 1
         ci:
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           PrPlanIT:
             maintainer: "PrPlanIT <precisionplanit@gmail.com>"
@@ -1179,7 +1179,7 @@ governance:
         version: 1
         ci:
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           PrPlanIT:
             maintainer: "PrPlanIT <precisionplanit@gmail.com>"
@@ -1304,7 +1304,7 @@ governance:
         version: 1
         ci:
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           SoFMeRight:
             maintainer: "SoFMeRight <sofmeright@gmail.com>"
@@ -1433,7 +1433,7 @@ governance:
         version: 1
         ci:
           forge: [gitlab]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         lifecycle:
           mode: gitops
         orgs:
@@ -1463,7 +1463,7 @@ governance:
             # entirely — so ci: restates forge and image alongside routing.
             ci:
               forge: [gitlab]
-              image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+              image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
               routing:
                 perform:
                   labels: [k8s-dungeon-production]
@@ -1621,7 +1621,7 @@ governance:
           # pipeline on the GitHub mirror, so its workflow is a generated artifact too and
           # governing only GitLab would leave the surface that builds them hand-managed.
           forge: [gitlab, github]
-          image: docker.cr.pcfae.com/prplanit/stagefreight:latest-dev
+          image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
         orgs:
           riff.cc:
             maintainer: "HomeLabHD <homelabhelp@gmail.com>"
