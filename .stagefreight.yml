@@ -338,6 +338,18 @@ governance:
           topics: [hubzilla, fediverse, activitypub, zot, nomadic-identity, docker]
           license: MIT
           category: applications
+
+        isync:
+          at: HomeLabHD/isync
+          title: "isync"
+          description:
+            - "Two-way IMAP mailbox synchronization (mbsync), rootless."
+            - "A 5 MB Alpine image running mbsync from the isync project: keeps two IMAP servers, or IMAP and Maildir, in sync in both directions with state kept between runs, as any UID on a read-only filesystem."
+          topics: [isync, mbsync, imap, email, sync]
+          # Upstream's license, kept as-is: isync is GPL-2.0-or-later.
+          license: GPL-2.0-or-later
+          category: utilities
+
         linkstack:
           at: HomeLabHD/LinkStack
           # main carries the consumable build (upstream's Laravel 12 `beta` line plus this
