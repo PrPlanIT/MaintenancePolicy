@@ -469,6 +469,25 @@ governance:
 
         nginx-extras:
           at: HomeLabHD/nginx-extras
+          config:
+            upstream:
+              sources:
+                nginx:
+                  apk: nginx
+                  suite: v3.24/main
+                  pins:
+                    - { file: Dockerfile, arg: NGINX_VERSION }
+              version:
+                track: nginx
+                since: v1.30.6
+              evidence:
+                image:
+                  probe: { package: nginx, manager: apk }
+            schedules:
+              upstream-refresh:
+                cron: "H H * * *"
+                build: changes
+                reason: "Daily watch of Alpine's nginx; move to its new release."
           title: "NGINX Extras"
           description:
             - "NGINX on Alpine with the extras module set compiled in."
@@ -566,6 +585,31 @@ governance:
                 outputs:
                   - { type: tree, source: host-dist }
             publish: { preset: "preset/publish-docker-binary.yml" }
+            upstream:
+              sources:
+                nut:
+                  git: https://github.com/networkupstools/nut
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+              version:
+                track: nut
+                ancestry: true
+                since: v2.8.5
+              sync:
+                from: nut
+                strategy: rebase
+                on_conflict: notify
+            repos:
+              github-mirror:
+                sync:
+                  branches: { scope: exact, force: true }
+                  tags: exact
+                  releases: { scope: all, drafts: true }
+            schedules:
+              upstream-refresh:
+                cron: "H H * * *"
+                build: changes
+                reason: "Daily watch of networkupstools/nut; rebase onto its new release."
           title: "Network UPS Tools"
           description:
             - "Network UPS Tools drivers, upsd and optional upsmon, rootless."
