@@ -133,6 +133,23 @@ governance:
           # deep merge), so each section restates the profile's preset and then adds only
           # what is genuinely repo-specific.
           config:
+            upstream:
+              sources:
+                core:
+                  pypi: ansible-core
+                  pins:
+                    - { file: Dockerfile, arg: ANSIBLE_CORE_VERSION }
+              version:
+                track: core
+                since: v2.21.5
+              evidence:
+                image:
+                  probe: { package: ansible-core, manager: pip }
+            schedules:
+              upstream-refresh:
+                cron: "H H * * *"
+                build: changes
+                reason: "Daily watch of ansible-core on PyPI; move to its new release."
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
               # contents-base and contents-apk come from stencils-docker now; only the
@@ -341,6 +358,25 @@ governance:
 
         isync:
           at: HomeLabHD/isync
+          config:
+            upstream:
+              sources:
+                isync:
+                  apk: isync
+                  repository: community
+                  pins:
+                    - { file: Dockerfile, arg: ISYNC_VERSION }
+              version:
+                track: isync
+                since: v1.5.1
+              evidence:
+                image:
+                  probe: { package: isync, manager: apk }
+            schedules:
+              upstream-refresh:
+                cron: "H H * * *"
+                build: changes
+                reason: "Daily watch of Alpine's isync; move to its new release."
           title: "isync"
           description:
             - "Two-way IMAP mailbox synchronization (mbsync), rootless."
@@ -474,7 +510,7 @@ governance:
               sources:
                 nginx:
                   apk: nginx
-                  suite: v3.24/main
+                  repository: main
                   pins:
                     - { file: Dockerfile, arg: NGINX_VERSION }
               version:
@@ -522,6 +558,26 @@ governance:
 
         osticket:
           at: HomeLabHD/osticket
+          config:
+            upstream:
+              sources:
+                osticket:
+                  git: https://github.com/osTicket/osTicket
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  pins:
+                    - { file: Dockerfile, arg: OSTICKET_VERSION }
+              version:
+                track: osticket
+                since: v1.18.4
+              evidence:
+                image:
+                  probe: { label: org.osticket.version }
+            schedules:
+              upstream-refresh:
+                cron: "H H * * *"
+                build: changes
+                reason: "Daily watch of osTicket/osTicket; move to its new release."
           title: "osTicket"
           description:
             - "Rootless container image for osTicket, the open-source support ticketing system."
