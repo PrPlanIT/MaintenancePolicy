@@ -145,11 +145,7 @@ governance:
               evidence:
                 image:
                   probe: { package: ansible-core, manager: pip }
-            schedules:
-              upstream-refresh:
-                cron: "H H * * *"
-                build: changes
-                reason: "Daily watch of ansible-core on PyPI; move to its new release."
+            schedules: { preset: "preset/schedules-upstream.yml" }
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
               # contents-base and contents-apk come from stencils-docker now; only the
@@ -372,11 +368,7 @@ governance:
               evidence:
                 image:
                   probe: { package: isync, manager: apk }
-            schedules:
-              upstream-refresh:
-                cron: "H H * * *"
-                build: changes
-                reason: "Daily watch of Alpine's isync; move to its new release."
+            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "isync"
           description:
             - "Two-way IMAP mailbox synchronization (mbsync), rootless."
@@ -519,11 +511,7 @@ governance:
               evidence:
                 image:
                   probe: { package: nginx, manager: apk }
-            schedules:
-              upstream-refresh:
-                cron: "H H * * *"
-                build: changes
-                reason: "Daily watch of Alpine's nginx; move to its new release."
+            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "NGINX Extras"
           description:
             - "NGINX on Alpine with the extras module set compiled in."
@@ -573,11 +561,7 @@ governance:
               evidence:
                 image:
                   probe: { label: org.osticket.version }
-            schedules:
-              upstream-refresh:
-                cron: "H H * * *"
-                build: changes
-                reason: "Daily watch of osTicket/osTicket; move to its new release."
+            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "osTicket"
           description:
             - "Rootless container image for osTicket, the open-source support ticketing system."
@@ -642,6 +626,7 @@ governance:
                   - { type: tree, source: host-dist }
             publish: { preset: "preset/publish-docker-binary.yml" }
             upstream:
+              preset: "preset/upstream-rebase.yml"
               sources:
                 nut:
                   git: https://github.com/networkupstools/nut
@@ -649,23 +634,13 @@ governance:
                     tags: '^v(?P<version>\d+\.\d+\.\d+)$'
               version:
                 track: nut
-                ancestry: true
                 since: v2.8.5
               sync:
                 from: nut
-                strategy: rebase
-                on_conflict: notify
             repos:
               github-mirror:
-                sync:
-                  branches: { scope: exact, force: true }
-                  tags: exact
-                  releases: { scope: all, drafts: true }
-            schedules:
-              upstream-refresh:
-                cron: "H H * * *"
-                build: changes
-                reason: "Daily watch of networkupstools/nut; rebase onto its new release."
+                sync: { preset: "preset/sync-mirror-force.yml" }
+            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "Network UPS Tools"
           description:
             - "Network UPS Tools drivers, upsd and optional upsmon, rootless."
@@ -881,6 +856,22 @@ governance:
             dependency:
               preset: "preset/dependency.yml"
               remediate: false
+            upstream:
+              preset: "preset/upstream-rebase.yml"
+              sources:
+                zitadel:
+                  git: https://github.com/zitadel/zitadel
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+              version:
+                track: zitadel
+                since: v4.19.4
+              sync:
+                from: zitadel
+            repos:
+              github-mirror:
+                sync: { preset: "preset/sync-mirror-force.yml" }
+            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "Zitadel"
           description:
             - "Identity and access management — an OIDC/OAuth2/SAML provider and user-management platform."
