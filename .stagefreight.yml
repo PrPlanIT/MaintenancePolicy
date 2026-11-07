@@ -699,6 +699,10 @@ governance:
           # builds + publish are restated in full because a repo config: replaces the key, not
           # merges. Carries the login-v2 project-private-labeling fix (upstream #10692).
           config:
+            secrets:
+              providers:
+                openbao: { kind: vault }
+            signing: { preset: "preset/signing.yml" }
             builds:
               preset: "preset/build-docker.yml"
               # Override the preset's single 'image' build (the id the uniform stencils reference)
@@ -723,12 +727,14 @@ governance:
                 build: image
                 tags: ["v{version}", "latest"]
                 when: { git_tags: [stable], events: [tag] }
+                signing_profile: release
               prerelease:
                 kind: registry
                 registry: [dockerhub, ghcr, harbor]
                 build: image
                 tags: ["v{version}"]
                 when: { git_tags: [prerelease], events: [tag] }
+                signing_profile: release
               dev:
                 kind: registry
                 registry: [dockerhub, ghcr, harbor]
@@ -776,6 +782,7 @@ governance:
                 path: "{org.docker}/zitadel-login"
                 tags: ["v{version}", "latest"]
                 when: { git_tags: [stable], events: [tag] }
+                signing_profile: release
               login-reg-prerelease:
                 kind: registry
                 registry: [dockerhub, harbor]
@@ -783,6 +790,7 @@ governance:
                 path: "{org.docker}/zitadel-login"
                 tags: ["v{version}"]
                 when: { git_tags: [prerelease], events: [tag] }
+                signing_profile: release
               login-reg-dev:
                 kind: registry
                 registry: [dockerhub, harbor]
@@ -798,6 +806,7 @@ governance:
                 path: "{org.ghcr}/zitadel-login"
                 tags: ["v{version}", "latest"]
                 when: { git_tags: [stable], events: [tag] }
+                signing_profile: release
               login-ghcr-prerelease:
                 kind: registry
                 registry: [ghcr]
@@ -805,6 +814,7 @@ governance:
                 path: "{org.ghcr}/zitadel-login"
                 tags: ["v{version}"]
                 when: { git_tags: [prerelease], events: [tag] }
+                signing_profile: release
               login-ghcr-dev:
                 kind: registry
                 registry: [ghcr]
