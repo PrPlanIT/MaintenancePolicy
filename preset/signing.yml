@@ -4,6 +4,7 @@ signing:
     release:
       requires: [kms]
       kms: { ref: tenant, provider: openbao, role: cosign }
+      non_exportable: required
       attestation: true
       enforce: true
       transparency_log: true
@@ -11,5 +12,6 @@ signing:
     dev:
       requires: [kms]
       kms: { ref: tenant, provider: openbao, role: cosign }
+      non_exportable: required
       attestation: true
   default_profile: dev
