@@ -120,4 +120,3 @@ narrate:
   script:
     - stagefreight ci run narrate
   when: always
-  allow_failure: true
