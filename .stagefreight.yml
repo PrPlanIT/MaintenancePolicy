@@ -116,6 +116,7 @@ governance:
         security: { preset: "preset/security.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
+        schedules: { preset: "preset/schedules-upstream.yml" }
         scribe: { preset: "preset/scribe-docker.yml" }
 
       # WHO — the catalog. A BRANDED entry: governance distributes this repo's identity
@@ -145,7 +146,6 @@ governance:
               evidence:
                 image:
                   probe: { package: ansible-core, manager: pip }
-            schedules: { preset: "preset/schedules-upstream.yml" }
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
               # contents-base and contents-apk come from stencils-docker now; only the
@@ -180,6 +180,20 @@ governance:
 
         apt-cacher-ng:
           at: HomeLabHD/apt-cacher-ng
+          config:
+            upstream:
+              sources:
+                apt-cacher-ng:
+                  apt: apt-cacher-ng
+                  suite: trixie/main
+                  pins:
+                    - { file: Dockerfile, arg: APT_CACHER_NG_VERSION }
+              version:
+                track: apt-cacher-ng
+                since: v3.7.5
+              evidence:
+                image:
+                  probe: { package: apt-cacher-ng, manager: dpkg }
           title: "APT Cacher NG"
           description:
             - "Caching proxy for Debian and Ubuntu package downloads."
@@ -368,7 +382,6 @@ governance:
               evidence:
                 image:
                   probe: { package: isync, manager: apk }
-            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "isync"
           description:
             - "Two-way IMAP mailbox synchronization (mbsync), rootless."
@@ -478,14 +491,6 @@ governance:
                     package: matrix-synapse
                     manager: pip
                   on_mismatch: refuse
-            # Automatic update cadence: a daily scheduled run watches upstream and bumps the
-            # base. build: changes means the schedule publishes nothing itself — the bump it
-            # commits starts its own pipeline, which builds and publishes.
-            schedules:
-              upstream-refresh:
-                cron: "17 11 * * *"
-                build: changes
-                reason: "Daily watch of element-hq/synapse; auto-bump the base on a new GA."
           title: "Synapse"
           description:
             - "Synapse with S3 media offload and the antispam hook, hardened and rootless."
@@ -511,7 +516,6 @@ governance:
               evidence:
                 image:
                   probe: { package: nginx, manager: apk }
-            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "NGINX Extras"
           description:
             - "NGINX on Alpine with the extras module set compiled in."
@@ -561,7 +565,6 @@ governance:
               evidence:
                 image:
                   probe: { label: org.osticket.version }
-            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "osTicket"
           description:
             - "Rootless container image for osTicket, the open-source support ticketing system."
@@ -640,7 +643,6 @@ governance:
             repos:
               github-mirror:
                 sync: { preset: "preset/sync-mirror-force.yml" }
-            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "Network UPS Tools"
           description:
             - "Network UPS Tools drivers, upsd and optional upsmon, rootless."
@@ -881,7 +883,6 @@ governance:
             repos:
               github-mirror:
                 sync: { preset: "preset/sync-mirror-force.yml" }
-            schedules: { preset: "preset/schedules-upstream.yml" }
           title: "Zitadel"
           description:
             - "Identity and access management — an OIDC/OAuth2/SAML provider and user-management platform."
@@ -1753,6 +1754,7 @@ governance:
         security: { preset: "preset/security.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
+        schedules: { preset: "preset/schedules-upstream.yml" }
         scribe: { preset: "preset/scribe-docker.yml" }
 
       repos:
