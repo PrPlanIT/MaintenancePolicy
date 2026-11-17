@@ -1,0 +1,11 @@
+upstream:
+  sources:
+    upstream:
+      fork_parent: github-mirror
+  version:
+    track: upstream
+    ancestry: true
+  sync:
+    from: upstream
+    strategy: merge
+    on_conflict: notify

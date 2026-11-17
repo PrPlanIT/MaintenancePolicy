@@ -211,8 +211,6 @@ governance:
               sources:
                 arkmanager:
                   git: https://github.com/arkmanager/ark-server-tools
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
                   pins:
                     - { file: Dockerfile, arg: AMG_VERSION }
               version:
@@ -239,15 +237,7 @@ governance:
           # profile's docker set, swaps in the Go+docker scribe rows, and runs `go test`.
           # The profile itself stays language-neutral.
           config:
-            upstream:
-              sources:
-                upstream:
-                  git: https://github.com/mpolden/echoip
-              sync:
-                from: upstream
-                onto: { branch: master }
-                strategy: merge
-                on_conflict: notify
+            upstream: { preset: "preset/upstream-sync.yml" }
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"]
             scribe: { preset: "preset/scribe-go-docker.yml" }
@@ -351,26 +341,18 @@ governance:
               sources:
                 erpnext:
                   git: https://github.com/frappe/erpnext
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
                   pins:
                     - { file: apps.json, path: "0.branch" }
                 hrms:
                   git: https://github.com/frappe/hrms
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
                   pins:
                     - { file: apps.json, path: "1.branch" }
                 helpdesk:
                   git: https://github.com/frappe/helpdesk
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
                   pins:
                     - { file: apps.json, path: "3.branch" }
                 crm:
                   git: https://github.com/frappe/crm
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
                   pins:
                     - { file: apps.json, path: "4.branch" }
               version:
@@ -483,15 +465,8 @@ governance:
           # dozen upstreams and would reset on every sync, so it is scoped out of lint while
           # the app's own PHP/blade/config/themes stay fully scanned.
           config:
-            upstream:
-              sources:
-                upstream:
-                  git: https://github.com/LinkStackOrg/LinkStack
-              sync:
-                from: upstream
-                onto: { branch: beta }
-                strategy: merge
-                on_conflict: notify
+            # main follows upstream's Laravel 12 beta line, not its default branch.
+            upstream: { preset: "preset/upstream-sync.yml", sync: { onto: { branch: beta } } }
             lint:
               preset: "preset/lint-generic.yml"
               exclude:
@@ -676,15 +651,10 @@ governance:
           # A deviating entry: this repo is Python, so it overrides the profile's
           # (docker-only) config with a pytest suite. The profile stays language-neutral.
           config:
+            # The GitHub mirror is not a recorded fork, so the upstream is written down.
             upstream:
-              sources:
-                upstream:
-                  git: https://github.com/psyinfra/prometheus-eaton-ups-exporter
-              sync:
-                from: upstream
-                onto: { branch: master }
-                strategy: merge
-                on_conflict: notify
+              preset: "preset/upstream-sync.yml"
+              sources: { upstream: { fork_parent: "", git: https://github.com/psyinfra/prometheus-eaton-ups-exporter } }
             test: { preset: "preset/test-python.yml" }
           title: "Eaton UPS Exporter"
           description:
@@ -765,15 +735,7 @@ governance:
           # Each section is restated in full because a repo config: replaces the key
           # rather than merging into it.
           config:
-            upstream:
-              sources:
-                upstream:
-                  git: https://github.com/weaveworks/weave-gitops
-              sync:
-                from: upstream
-                onto: { branch: main }
-                strategy: merge
-                on_conflict: notify
+            upstream: { preset: "preset/upstream-sync.yml" }
             builds:
               preset: "preset/build-docker.yml"
               # Three Dockerfiles ship (dev/gitops-server/gitops); the published image is
@@ -1870,6 +1832,11 @@ governance:
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         schedules: { preset: "preset/schedules-upstream.yml" }
+        # Every repo here is a GitHub fork of riffcc and releases at its version, alphas
+        # included.
+        upstream:
+          preset: "preset/upstream-fork.yml"
+          sources: { upstream: { select: { prereleases: true } } }
         scribe: { preset: "preset/scribe-docker.yml" }
 
       repos:
@@ -1880,21 +1847,6 @@ governance:
           # shared names (image/bin) so the profile's publish preset resolves them; the
           # staged filename stays the product name because the Dockerfile COPYs it.
           config:
-            upstream:
-              sources:
-                dragonfly:
-                  git: https://github.com/riffcc/dragonfly
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?)$'
-                    prereleases: true
-              version:
-                track: dragonfly
-                since: v0.5.0-alpha1
-                ancestry: true
-              sync:
-                from: dragonfly
-                strategy: merge
-                on_conflict: notify
             builds:
               image:
                 kind: docker
@@ -1919,21 +1871,6 @@ governance:
         jetpack:
           at: riff.cc/jetpack
           config:
-            upstream:
-              sources:
-                jetpack:
-                  git: https://github.com/riffcc/jetpack
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?)$'
-                    prereleases: true
-              version:
-                track: jetpack
-                since: v0.5.0-alpha2
-                ancestry: true
-              sync:
-                from: jetpack
-                strategy: merge
-                on_conflict: notify
             builds:
               image:
                 kind: docker
