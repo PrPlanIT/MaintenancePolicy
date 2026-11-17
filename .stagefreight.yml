@@ -323,6 +323,38 @@ governance:
               # Local only: the shared policy also pushes cache layers to Harbor, which
               # for an image this size costs more registry storage than the pull saves.
               mode: local
+            upstream:
+              sources:
+                erpnext:
+                  git: https://github.com/frappe/erpnext
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  pins:
+                    - { file: apps.json, path: "0.branch" }
+                hrms:
+                  git: https://github.com/frappe/hrms
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  pins:
+                    - { file: apps.json, path: "1.branch" }
+                helpdesk:
+                  git: https://github.com/frappe/helpdesk
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  pins:
+                    - { file: apps.json, path: "3.branch" }
+                crm:
+                  git: https://github.com/frappe/crm
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  pins:
+                    - { file: apps.json, path: "4.branch" }
+              version:
+                track: erpnext
+                since: v16.50.0
+              evidence:
+                image:
+                  probe: { package: erpnext, manager: pip }
           title: "Frappe Bench"
           description:
             - "ERPNext with HR, CRM, and helpdesk, built as one container image."
