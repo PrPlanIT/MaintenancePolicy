@@ -206,6 +206,21 @@ governance:
 
         ark-se-server:
           at: HomeLabHD/ark-se-server
+          config:
+            upstream:
+              sources:
+                arkmanager:
+                  git: https://github.com/arkmanager/ark-server-tools
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  pins:
+                    - { file: Dockerfile, arg: AMG_VERSION }
+              version:
+                track: arkmanager
+                since: v1.6.69
+              evidence:
+                image:
+                  probe: { file: /usr/local/bin/arkmanager, match: "arkstTag='v?(?P<version>[0-9.]+)'" }
           # OPEN — default branch is `master` while the publish preset gates on `main`,
           # so publish will not fire until that branch is flipped. Not worked around
           # here: overriding publish: would replace the whole section wholesale.
@@ -224,6 +239,15 @@ governance:
           # profile's docker set, swaps in the Go+docker scribe rows, and runs `go test`.
           # The profile itself stays language-neutral.
           config:
+            upstream:
+              sources:
+                upstream:
+                  git: https://github.com/mpolden/echoip
+              sync:
+                from: upstream
+                onto: { branch: master }
+                strategy: merge
+                on_conflict: notify
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"]
             scribe: { preset: "preset/scribe-go-docker.yml" }
@@ -371,6 +395,26 @@ governance:
           # version a function of when a pod restarted and puts an outage between the
           # project and a booting pod.
           config:
+            upstream:
+              sources:
+                core:
+                  git: https://github.com/HomeLabHD/hubzilla-core.git
+                  mirror_of: https://framagit.org/hubzilla/core.git
+                  pins:
+                    - { file: Dockerfile, arg: HUBZILLA_REF }
+                    - { file: components.json, path: core.ref }
+                addons:
+                  git: https://github.com/HomeLabHD/hubzilla-addons.git
+                  mirror_of: https://framagit.org/hubzilla/addons.git
+                  pins:
+                    - { file: Dockerfile, arg: ADDONS_REF }
+                    - { file: components.json, path: addons.ref }
+              version:
+                track: core
+                since: v11.4.2
+              evidence:
+                image:
+                  probe: { file: /var/www/html/boot.php, match: "STD_VERSION', '(?P<version>[0-9.]+)'" }
             builds:
               image:
                 kind: docker
@@ -378,9 +422,6 @@ governance:
                 context: .
                 platforms: [linux/amd64]
                 build_args:
-                  # Refreshing the mirrors tracks upstream; changing these ships it.
-                  HUBZILLA_REF: "11.4.2"
-                  ADDONS_REF: "11.4.2"
                   PHP_VERSION: "8.3.36"
             publish:
               preset: "preset/publish-docker.yml"
@@ -442,6 +483,15 @@ governance:
           # dozen upstreams and would reset on every sync, so it is scoped out of lint while
           # the app's own PHP/blade/config/themes stay fully scanned.
           config:
+            upstream:
+              sources:
+                upstream:
+                  git: https://github.com/LinkStackOrg/LinkStack
+              sync:
+                from: upstream
+                onto: { branch: beta }
+                strategy: merge
+                on_conflict: notify
             lint:
               preset: "preset/lint-generic.yml"
               exclude:
@@ -559,6 +609,21 @@ governance:
 
         steamcmd:
           at: HomeLabHD/SteamCMD
+          config:
+            upstream:
+              sources:
+                debian:
+                  image: docker.io/library/debian
+                  select:
+                    tags: '^(?P<version>\d+\.\d+)$'
+                  pins:
+                    - { file: Dockerfile, arg: DEBIAN_VERSION }
+              version:
+                track: debian
+                since: v13.7.0
+              evidence:
+                image:
+                  probe: { file: /etc/debian_version }
           title: "SteamCMD"
           description:
             - "SteamCMD base image for building game-server containers."
@@ -611,6 +676,15 @@ governance:
           # A deviating entry: this repo is Python, so it overrides the profile's
           # (docker-only) config with a pytest suite. The profile stays language-neutral.
           config:
+            upstream:
+              sources:
+                upstream:
+                  git: https://github.com/psyinfra/prometheus-eaton-ups-exporter
+              sync:
+                from: upstream
+                onto: { branch: master }
+                strategy: merge
+                on_conflict: notify
             test: { preset: "preset/test-python.yml" }
           title: "Eaton UPS Exporter"
           description:
@@ -691,6 +765,15 @@ governance:
           # Each section is restated in full because a repo config: replaces the key
           # rather than merging into it.
           config:
+            upstream:
+              sources:
+                upstream:
+                  git: https://github.com/weaveworks/weave-gitops
+              sync:
+                from: upstream
+                onto: { branch: main }
+                strategy: merge
+                on_conflict: notify
             builds:
               preset: "preset/build-docker.yml"
               # Three Dockerfiles ship (dev/gitops-server/gitops); the published image is
