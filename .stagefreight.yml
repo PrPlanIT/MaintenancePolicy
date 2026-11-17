@@ -1880,6 +1880,21 @@ governance:
           # shared names (image/bin) so the profile's publish preset resolves them; the
           # staged filename stays the product name because the Dockerfile COPYs it.
           config:
+            upstream:
+              sources:
+                dragonfly:
+                  git: https://github.com/riffcc/dragonfly
+                  select:
+                    tags: '^v(?P<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z.]+)?)$'
+                    prereleases: true
+              version:
+                track: dragonfly
+                since: v0.5.0-alpha1
+                ancestry: true
+              sync:
+                from: dragonfly
+                strategy: merge
+                on_conflict: notify
             builds:
               image:
                 kind: docker
