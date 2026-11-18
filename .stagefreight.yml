@@ -144,8 +144,7 @@ governance:
                 track: core
                 since: v2.21.5
               evidence:
-                image:
-                  probe: { package: ansible-core, manager: pip }
+                image: { package: ansible-core, manager: pip }
             stencils:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
               # contents-base and contents-apk come from stencils-docker now; only the
@@ -192,8 +191,7 @@ governance:
                 track: apt-cacher-ng
                 since: v3.7.5
               evidence:
-                image:
-                  probe: { package: apt-cacher-ng, manager: dpkg }
+                image: { package: apt-cacher-ng, manager: dpkg }
           title: "APT Cacher NG"
           description:
             - "Caching proxy for Debian and Ubuntu package downloads."
@@ -217,8 +215,7 @@ governance:
                 track: arkmanager
                 since: v1.6.69
               evidence:
-                image:
-                  probe: { file: /usr/local/bin/arkmanager, match: "arkstTag='v?(?P<version>[0-9.]+)'" }
+                image: { file: /usr/local/bin/arkmanager, match: "arkstTag='v?(?P<version>[0-9.]+)'" }
           # OPEN — default branch is `master` while the publish preset gates on `main`,
           # so publish will not fire until that branch is flipped. Not worked around
           # here: overriding publish: would replace the whole section wholesale.
@@ -359,8 +356,7 @@ governance:
                 track: erpnext
                 since: v16.50.0
               evidence:
-                image:
-                  probe: { package: erpnext, manager: pip }
+                image: { package: erpnext, manager: pip }
           title: "Frappe Bench"
           description:
             - "ERPNext with HR, CRM, and helpdesk, built as one container image."
@@ -395,8 +391,7 @@ governance:
                 track: core
                 since: v11.4.2
               evidence:
-                image:
-                  probe: { file: /var/www/html/boot.php, match: "STD_VERSION', '(?P<version>[0-9.]+)'" }
+                image: { file: /var/www/html/boot.php, match: "STD_VERSION', '(?P<version>[0-9.]+)'" }
             builds:
               image:
                 kind: docker
@@ -435,8 +430,7 @@ governance:
                 track: isync
                 since: v1.5.1
               evidence:
-                image:
-                  probe: { package: isync, manager: apk }
+                image: { package: isync, manager: apk }
           title: "isync"
           description:
             - "Two-way IMAP mailbox synchronization (mbsync), rootless."
@@ -466,7 +460,7 @@ governance:
           # the app's own PHP/blade/config/themes stay fully scanned.
           config:
             # main follows upstream's Laravel 12 beta line, not its default branch.
-            upstream: { preset: "preset/upstream-sync.yml", sync: { onto: { branch: beta } } }
+            upstream: { preset: "preset/upstream-sync.yml", sync: { branch: beta } }
             lint:
               preset: "preset/lint-generic.yml"
               exclude:
@@ -536,17 +530,15 @@ governance:
                 synapse:
                   image: ghcr.io/element-hq/synapse
                   scheme: semver
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
-                    prereleases: false
+                  tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  prereleases: false
               version:
                 track: synapse
                 on_mismatch: refuse
               evidence:
                 image:
-                  probe:
-                    package: matrix-synapse
-                    manager: pip
+                  package: matrix-synapse
+                  manager: pip
                   on_mismatch: refuse
           title: "Synapse"
           description:
@@ -571,8 +563,7 @@ governance:
                 track: nginx
                 since: v1.30.6
               evidence:
-                image:
-                  probe: { package: nginx, manager: apk }
+                image: { package: nginx, manager: apk }
           title: "NGINX Extras"
           description:
             - "NGINX on Alpine with the extras module set compiled in."
@@ -589,16 +580,14 @@ governance:
               sources:
                 debian:
                   image: docker.io/library/debian
-                  select:
-                    tags: '^(?P<version>\d+\.\d+)$'
+                  tags: '^(?P<version>\d+\.\d+)$'
                   pins:
                     - { file: Dockerfile, arg: DEBIAN_VERSION }
               version:
                 track: debian
                 since: v13.7.0
               evidence:
-                image:
-                  probe: { file: /etc/debian_version }
+                image: { file: /etc/debian_version }
           title: "SteamCMD"
           description:
             - "SteamCMD base image for building game-server containers."
@@ -627,16 +616,14 @@ governance:
               sources:
                 osticket:
                   git: https://github.com/osTicket/osTicket
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  tags: '^v(?P<version>\d+\.\d+\.\d+)$'
                   pins:
                     - { file: Dockerfile, arg: OSTICKET_VERSION }
               version:
                 track: osticket
                 since: v1.18.4
               evidence:
-                image:
-                  probe: { label: org.osticket.version }
+                image: { label: org.osticket.version }
           title: "osTicket"
           description:
             - "Rootless container image for osTicket, the open-source support ticketing system."
@@ -709,8 +696,7 @@ governance:
               sources:
                 nut:
                   git: https://github.com/networkupstools/nut
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  tags: '^v(?P<version>\d+\.\d+\.\d+)$'
               version:
                 track: nut
                 since: v2.8.5
@@ -950,8 +936,7 @@ governance:
               sources:
                 zitadel:
                   git: https://github.com/zitadel/zitadel
-                  select:
-                    tags: '^v(?P<version>\d+\.\d+\.\d+)$'
+                  tags: '^v(?P<version>\d+\.\d+\.\d+)$'
               version:
                 track: zitadel
                 since: v4.19.4
@@ -1836,7 +1821,7 @@ governance:
         # included.
         upstream:
           preset: "preset/upstream-fork.yml"
-          sources: { upstream: { select: { prereleases: true } } }
+          sources: { upstream: { prereleases: true } }
         scribe: { preset: "preset/scribe-docker.yml" }
 
       repos:
