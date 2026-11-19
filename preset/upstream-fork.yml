@@ -6,6 +6,5 @@ upstream:
     track: upstream
     ancestry: true
   sync:
-    from: upstream
     strategy: merge
     on_conflict: notify

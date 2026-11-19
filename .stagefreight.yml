@@ -129,24 +129,11 @@ governance:
           # A deviating entry: this image publishes a bill-of-materials into its docs —
           # apk/pip/galaxy/binaries inventories rendered from the build manifest. The
           # contents stencils name THIS build and the sections its manifest actually
-          # emits, so they cannot live in the shared library. A per-repo config: override
-          # replaces a whole top-level section (mergeConfigOverride is key-replace, not a
-          # deep merge), so each section restates the profile's preset and then adds only
-          # what is genuinely repo-specific.
+          # emits, so they cannot live in the shared library.
           config:
             upstream:
-              sources:
-                core:
-                  pypi: ansible-core
-                  pins:
-                    - { file: Dockerfile, arg: ANSIBLE_CORE_VERSION }
-              version:
-                track: core
-                since: v2.21.5
-              evidence:
-                image: { package: ansible-core, manager: pip }
+              version: { track: ansible-core, since: v2.21.5 }
             stencils:
-              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
               # contents-base and contents-apk come from stencils-docker now; only the
               # inventories unique to this image are declared here. Redeclaring the
               # shared two is a duplicate-key error, not an override.
@@ -154,7 +141,6 @@ governance:
               contents-galaxy:   { type: contents, build: image, section: inventories.galaxy, render: badges }
               contents-binaries: { type: contents, build: image, section: inventories.binaries, render: badges }
             scribe:
-              preset: "preset/scribe-docker.yml"
               files:
                 readme.versions: { file: "README.md", between: ["<!-- sf:versions:start -->", "<!-- sf:versions:end -->"], items: [contents-base] }
                 readme.apk:      { file: "README.md", between: ["<!-- sf:apk:start -->", "<!-- sf:apk:end -->"], items: [contents-apk] }
@@ -163,9 +149,8 @@ governance:
                 readme.binaries: { file: "README.md", between: ["<!-- sf:binaries:start -->", "<!-- sf:binaries:end -->"], items: [contents-binaries] }
                 usage.tools:     { file: "docs/Usage.md", between: ["<!-- sf:usage-tools:start -->", "<!-- sf:usage-tools:end -->"], items: [contents-pip] }
                 usage.galaxy:    { file: "docs/Usage.md", between: ["<!-- sf:usage-galaxy:start -->", "<!-- sf:usage-galaxy:end -->"], items: [contents-galaxy] }
-              # restated because scribe writes a second file the preset does not know about
+              # scribe writes a second file the preset does not know about
               commit:
-                type: docs
                 message: "refresh generated docs and badges"
                 add: ["README.md", "docs/Usage.md", ".stagefreight/scribe"]
           title: "Ansible"
@@ -173,8 +158,6 @@ governance:
             - "Container image for running Ansible playbooks in CI and local automation."
             - "Lightweight Ansible image preloaded with common community collections, WinRM support for Windows nodes, and kubectl + kustomize for Kubernetes work — built for running playbooks in CI/CD pipelines and homelab automation."
           topics: [ansible, automation, iac, ci, kubernetes, winrm]
-          # Upstream's license, kept as-is — matches org.opencontainers.image.licenses.
-          license: GPL-3.0
           category: automation
 
         apt-cacher-ng:
@@ -187,45 +170,28 @@ governance:
                   suite: trixie/main
                   pins:
                     - { file: Dockerfile, arg: APT_CACHER_NG_VERSION }
-              version:
-                track: apt-cacher-ng
-                since: v3.7.5
-              evidence:
-                image: { package: apt-cacher-ng, manager: dpkg }
+              version: { track: apt-cacher-ng, since: v3.7.5 }
           title: "APT Cacher NG"
           description:
             - "Caching proxy for Debian and Ubuntu package downloads."
             - "Rootless apt-cacher-ng container that caches APT package downloads to cut bandwidth and speed up repeat installs across CI pipelines and homelab networks, with container log streaming, runtime tuning, init-managed volume ownership, and an HTTP health check."
           topics: [apt, apt-cacher-ng, caching-proxy, debian, ubuntu, homelab, ci]
-          # Upstream's license, kept as-is: apt-cacher-ng is BSD-4-Clause (Eduard Bloch),
-          # matching org.opencontainers.image.licenses in the Dockerfile.
-          license: BSD-4-Clause
           category: infrastructure
 
         ark-se-server:
           at: HomeLabHD/ark-se-server
           config:
             upstream:
-              sources:
-                arkmanager:
-                  git: https://github.com/arkmanager/ark-server-tools
-                  pins:
-                    - { file: Dockerfile, arg: AMG_VERSION }
-              version:
-                track: arkmanager
-                since: v1.6.69
+              version: { track: ark-server-tools }
               evidence:
                 image: { file: /usr/local/bin/arkmanager, match: "arkstTag='v?(?P<version>[0-9.]+)'" }
           # OPEN — default branch is `master` while the publish preset gates on `main`,
-          # so publish will not fire until that branch is flipped. Not worked around
-          # here: overriding publish: would replace the whole section wholesale.
+          # so publish will not fire until that branch is flipped.
           title: "ARK: Survival Evolved Server"
           description:
             - "Dedicated server image for ARK: Survival Evolved, for single instances and clusters."
             - "Container image running an ARK: Survival Evolved dedicated server, supporting both standalone instances and multi-server clusters, built on the SteamCMD base image."
           topics: [ark, game-server, steamcmd, dedicated-server, gaming]
-          # Upstream's license, kept as-is: forked from SickHub/arkserver (MIT).
-          license: MIT
           category: games
 
         echoip:
@@ -239,14 +205,12 @@ governance:
               presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"]
             scribe: { preset: "preset/scribe-go-docker.yml" }
             test: { preset: "preset/test-go.yml" }
-            toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
+            toolchains: { want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
           title: "echoip"
           description:
             - "Self-hosted service for looking up your own public IP address."
             - "Container image for echoip, a small IP-address lookup service that reports the caller's public address and geolocation over plain HTTP or JSON, suitable for self-hosting behind a reverse proxy."
           topics: [ip, geoip, lookup, networking, self-hosted]
-          # Upstream's license, kept as-is: echoip is BSD-3-Clause (Martin Polden).
-          license: BSD-3-Clause
           category: networking
 
         frappe-suite:
@@ -257,25 +221,20 @@ governance:
           # neither of which the shared docker build can describe.
           config:
             git:
-              preset: "preset/git.yml"
               # Without the submodule the context directory is empty and the build
               # fails on a missing Containerfile rather than on the checkout it skipped.
               submodules: true
             # The bundled apps arrive through bench, not a Dockerfile pip line, so they are
             # read from what scanning the image detected.
             stencils:
-              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
               contents-apps: { type: contents, build: image, section: detected.pip, render: badges, include: [frappe, erpnext, hrms, crm, helpdesk, telephony] }
             scribe:
-              preset: "preset/scribe-docker.yml"
               files:
                 readme.contents.apps: { file: "README.md", between: ["<!-- sf:contents-apps:start -->", "<!-- sf:contents-apps:end -->"], items: [contents-apps] }
             builds:
               image:
-                kind: docker
                 dockerfile: frappe_docker/images/custom/Containerfile
                 context: frappe_docker
-                platforms: [linux/amd64]
                 secrets:
                   # The Containerfile mounts the app list for a single RUN; the
                   # APPS_JSON_BASE64 build arg most guides still show is gone upstream.
@@ -295,7 +254,6 @@ governance:
                   # fetches by branch or tag name only — so it alone follows develop.
                   FRAPPE_BRANCH: v16.51.0
             publish:
-              preset: "preset/publish-docker.yml"
               # Series aliases, added to the shared targets. This repo's own version names
               # THIS artifact — its app set, its interpreter pins — which is not something
               # ERPNext's numbering can express: two builds of the same upstream release
@@ -310,10 +268,7 @@ governance:
                 tags: ["v{version}", "latest", "latest-v16"]
               dev:
                 tags: ["dev-{sha:8}", "latest-dev", "latest-v16-dev"]
-            dependency:
-              preset: "preset/dependency.yml"
             lint:
-              preset: "preset/lint-generic.yml"
               modules:
                 # images/bench is upstream's development container, which this repo does
                 # not build — only images/custom is. Its base-image staleness is a real
@@ -330,7 +285,6 @@ governance:
                   exclude:
                     - "frappe_docker/docs/**"
             build_cache:
-              preset: "preset/build_cache.yml"
               # Local only: the shared policy also pushes cache layers to Harbor, which
               # for an image this size costs more registry storage than the pull saves.
               mode: local
@@ -352,9 +306,7 @@ governance:
                   git: https://github.com/frappe/crm
                   pins:
                     - { file: apps.json, path: "4.branch" }
-              version:
-                track: erpnext
-                since: v16.50.0
+              version: { track: erpnext }
               evidence:
                 image: { package: erpnext, manager: pip }
           title: "Frappe Bench"
@@ -362,7 +314,6 @@ governance:
             - "ERPNext with HR, CRM, and helpdesk, built as one container image."
             - "Frappe bench image bundling ERPNext, HRMS, CRM, telephony, and helpdesk."
           topics: [erpnext, frappe, erp, hrms, helpdesk, docker]
-          license: GPL-3.0
           category: applications
         hubzilla:
           at: HomeLabHD/hubzilla
@@ -387,21 +338,16 @@ governance:
                   pins:
                     - { file: Dockerfile, arg: ADDONS_REF }
                     - { file: components.json, path: addons.ref }
-              version:
-                track: core
-                since: v11.4.2
+              version: { track: core }
               evidence:
                 image: { file: /var/www/html/boot.php, match: "STD_VERSION', '(?P<version>[0-9.]+)'" }
             builds:
               image:
-                kind: docker
                 dockerfile: Dockerfile
                 context: .
-                platforms: [linux/amd64]
                 build_args:
                   PHP_VERSION: "8.3.36"
             publish:
-              preset: "preset/publish-docker.yml"
               # The series alias is a literal and nothing ties it to the refs above, so
               # moving the pins to a 12.x line means changing it here by hand.
               stable:
@@ -413,24 +359,13 @@ governance:
             - "Hubzilla and its official addons, built at a pinned upstream revision."
             - "Container image for Hubzilla, a federated social platform with nomadic identity and per-object permissions, carrying the official addon set so ActivityPub federation is available rather than Zot alone."
           topics: [hubzilla, fediverse, activitypub, zot, nomadic-identity, docker]
-          license: MIT
           category: applications
 
         isync:
           at: HomeLabHD/isync
           config:
             upstream:
-              sources:
-                isync:
-                  apk: isync
-                  repository: community
-                  pins:
-                    - { file: Dockerfile, arg: ISYNC_VERSION }
-              version:
-                track: isync
-                since: v1.5.1
-              evidence:
-                image: { package: isync, manager: apk }
+              version: { track: isync }
           title: "isync"
           description:
             - "Two-way IMAP mailbox synchronization (mbsync), rootless."
@@ -444,14 +379,12 @@ governance:
           at: HomeLabHD/LinkStack
           # main carries the consumable build (upstream's Laravel 12 `beta` line plus this
           # fork's patches); the `original` branch mirrors upstream, so publish fires from
-          # main like the rest of the profile. License is AGPL-3.0 per upstream's LICENSE
-          # file (its composer.json's GPL-3.0 is an upstream inconsistency).
+          # main like the rest of the profile.
           title: "LinkStack"
           description:
             - "Self-hosted link-in-bio page — showcase all your links on your own server."
             - "Container image for LinkStack, the self-hosted link-in-bio / personal-profile platform (Laravel), built on Alpine + Apache + PHP 8.3 as the non-root apache user, with generic OpenID Connect SSO against any discovery-based issuer."
           topics: [linkstack, linktree, link-in-bio, php, laravel, oidc, sso]
-          license: AGPL-3.0
           category: applications
           # A deviating entry: LinkStack carries a large vendored front-end (CKEditor, the
           # compiled asset bundles, the button-editor libraries) plus an npm build/asset
@@ -462,7 +395,6 @@ governance:
             # main follows upstream's Laravel 12 beta line, not its default branch.
             upstream: { preset: "preset/upstream-sync.yml", sync: { branch: beta } }
             lint:
-              preset: "preset/lint-generic.yml"
               exclude:
                 - "resources/ckeditor/**"
                 - "assets/external-dependencies/**"
@@ -478,7 +410,6 @@ governance:
                   exclude:
                     - "package.json"
             dependency:
-              preset: "preset/dependency.yml"
               # Carried deliberately, named: advisories in the npm build-tool chain — absent
               # from the runtime PHP image (the Dockerfile never runs npm) and fixable only
               # through majors that are upstream's asset-build call. Runtime PHP deps stay
@@ -507,39 +438,24 @@ governance:
           config:
             builds:
               image:
-                kind: docker
                 dockerfile: Dockerfile
                 context: .
-                platforms: [linux/amd64]
                 build_args:
                   # The base digest is pinned in the Dockerfile; these are the modules baked
                   # in beside it. pip is removed afterwards, so adding one later is a
                   # rebuild — which is why the set is decided up front.
                   S3_PROVIDER_VERSION: "1.7.0"
                   HTTP_ANTISPAM_VERSION: "0.5.1"
-            # Auto-bump the base image: discover element-hq/synapse's tags from ghcr.io
-            # directly — the base's own canonical registry, anonymously — and move the FROM
-            # tag+digest when a GA ships. A pull-through proxy is a pull mirror, not an
-            # enumeration surface: it can't list upstream tags it hasn't already cached.
-            dependency:
-              preset: "preset/dependency.yml"
             # Fork-mode guarding: watch element-hq/synapse's GA releases, refuse a release tag
             # Synapse never published, and prove the built image actually contains that version.
             upstream:
               sources:
                 synapse:
                   image: ghcr.io/element-hq/synapse
-                  scheme: semver
                   tags: '^v(?P<version>\d+\.\d+\.\d+)$'
-                  prereleases: false
-              version:
-                track: synapse
-                on_mismatch: refuse
+              version: { track: synapse }
               evidence:
-                image:
-                  package: matrix-synapse
-                  manager: pip
-                  on_mismatch: refuse
+                image: { package: matrix-synapse, manager: pip }
           title: "Synapse"
           description:
             - "Synapse with S3 media offload and the antispam hook, hardened and rootless."
@@ -553,39 +469,19 @@ governance:
           at: HomeLabHD/nginx-extras
           config:
             upstream:
-              sources:
-                nginx:
-                  apk: nginx
-                  repository: main
-                  pins:
-                    - { file: Dockerfile, arg: NGINX_VERSION }
-              version:
-                track: nginx
-                since: v1.30.6
-              evidence:
-                image: { package: nginx, manager: apk }
+              version: { track: nginx, since: v1.30.6 }
           title: "NGINX Extras"
           description:
             - "NGINX on Alpine with the extras module set compiled in."
             - "Alpine-based NGINX image with dynamic modules for headers-more, brotli, geoip2, and echo, plus a private health endpoint, Cloudflare real-client-IP refresh at startup, and strict TLS defaults with HSTS enabled."
           topics: [nginx, alpine, reverse-proxy, brotli, geoip2, tls]
-          # Upstream's license, kept as-is — matches org.opencontainers.image.licenses.
-          license: GPL-3.0
           category: infrastructure
 
         steamcmd:
           at: HomeLabHD/SteamCMD
           config:
             upstream:
-              sources:
-                debian:
-                  image: docker.io/library/debian
-                  tags: '^(?P<version>\d+\.\d+)$'
-                  pins:
-                    - { file: Dockerfile, arg: DEBIAN_VERSION }
-              version:
-                track: debian
-                since: v13.7.0
+              version: { track: debian }
               evidence:
                 image: { file: /etc/debian_version }
           title: "SteamCMD"
@@ -593,7 +489,6 @@ governance:
             - "SteamCMD base image for building game-server containers."
             - "Debian-slim SteamCMD base image with glibc and i386 multiarch support for game-server containers, kept to a minimal CVE surface as a foundation for dedicated-server images."
           topics: [steamcmd, game-server, steam, base-image, debian]
-          license: MIT
           category: games
 
         sm-lickitung-gen:
@@ -606,22 +501,13 @@ governance:
             - "Static single-page utility served from a minimal nginx container."
             - "Minimal nginx container serving a self-contained HTML+JS utility for out-of-production server baseboard-management hardware. Non-commercial, educational and research use only."
           topics: [static-site, nginx, homelab, utility]
-          license: MIT
           category: utilities
 
         osticket:
           at: HomeLabHD/osticket
           config:
             upstream:
-              sources:
-                osticket:
-                  git: https://github.com/osTicket/osTicket
-                  tags: '^v(?P<version>\d+\.\d+\.\d+)$'
-                  pins:
-                    - { file: Dockerfile, arg: OSTICKET_VERSION }
-              version:
-                track: osticket
-                since: v1.18.4
+              version: { track: osticket, since: v1.18.4 }
               evidence:
                 image: { label: org.osticket.version }
           title: "osTicket"
@@ -629,8 +515,6 @@ governance:
             - "Rootless container image for osTicket, the open-source support ticketing system."
             - "Rootless osTicket image running nginx and php-fpm under a minimal tini init on stock php:8.3-fpm-alpine — runs as uid 1000 and under arbitrary UIDs for hardened clusters, bundles the official and community plugin sets, and leaves cron to a separate scheduled job."
           topics: [osticket, ticketing, helpdesk, support, php, nginx, rootless]
-          # Upstream's license, kept as-is: osTicket is GPL-2.0.
-          license: GPL-2.0
           category: applications
 
         prometheus-eaton-ups-exporter:
@@ -641,14 +525,13 @@ governance:
             # The GitHub mirror is not a recorded fork, so the upstream is written down.
             upstream:
               preset: "preset/upstream-sync.yml"
-              sources: { upstream: { fork_parent: "", git: https://github.com/psyinfra/prometheus-eaton-ups-exporter } }
+              sources: { upstream: { fork_parent: null, git: https://github.com/psyinfra/prometheus-eaton-ups-exporter } }
             test: { preset: "preset/test-python.yml" }
           title: "Eaton UPS Exporter"
           description:
             - "Prometheus exporter for Eaton UPS devices via the Eaton REST API."
             - "Rootless container exporting Eaton UPS load, runtime, battery, and I/O metrics to Prometheus, scraped over the UPS web API."
           topics: [prometheus, exporter, ups, eaton, monitoring]
-          license: ISC
           category: monitoring
 
         nut:
@@ -661,15 +544,12 @@ governance:
           # bin is a Debian trixie host build for the Proxmox hosts; snmp-ups needs the host's libsnmp40t64.
           config:
             dependency:
-              preset: "preset/dependency.yml"
               remediate: false
             lint:
-              preset: "preset/lint-generic.yml"
               modules:
                 yaml:
                   exclude: [".travis.yml"]
             builds:
-              preset: "preset/build-docker.yml"
               bin:
                 kind: command
                 image: docker.io/library/debian:trixie@sha256:4c25275446ca371766b8b093c696782eabce06263fccacb8d5d813b3dc44b308
@@ -694,14 +574,8 @@ governance:
             upstream:
               preset: "preset/upstream-rebase.yml"
               sources:
-                nut:
-                  git: https://github.com/networkupstools/nut
-                  tags: '^v(?P<version>\d+\.\d+\.\d+)$'
-              version:
-                track: nut
-                since: v2.8.5
-              sync:
-                from: nut
+                nut: { git: https://github.com/networkupstools/nut }
+              version: { track: nut }
             repos:
               github-mirror:
                 sync: { preset: "preset/sync-mirror-force.yml" }
@@ -718,12 +592,9 @@ governance:
           # A deviating entry: a fork carrying upstream's 302M website/ tree, which the
           # generic exclude (binary file types only) would walk every run, plus a build
           # that must name its Dockerfile and a frontend held behind upstream tooling.
-          # Each section is restated in full because a repo config: replaces the key
-          # rather than merging into it.
           config:
             upstream: { preset: "preset/upstream-sync.yml" }
             builds:
-              preset: "preset/build-docker.yml"
               # Three Dockerfiles ship (dev/gitops-server/gitops); the published image is
               # the server (UI + API). Named so the build does not lexical-pick
               # dev.dockerfile (a local-dev stub) — StageFreight refuses to guess among several.
@@ -733,7 +604,6 @@ governance:
                 # BUILD_DATE from the resolved version + SHA because the Dockerfile
                 # declares those ARGs. An explicit build_arg would OVERRIDE (block) that.
             lint:
-              preset: "preset/lint-generic.yml"
               exclude: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico",
                         "*.svg", "*.ttf", "*.woff", "*.woff2", "*.pdf", "website/**"]
               modules:
@@ -753,7 +623,6 @@ governance:
             - "Web UI for Flux, showing GitOps reconciliation state across a cluster."
             - "Fork of the Weave GitOps dashboard, serving a view of Flux Kustomizations, HelmReleases, and sources, with the image built and published from this repo."
           topics: [gitops, flux, kubernetes, dashboard, continuous-delivery]
-          license: Apache-2.0
           category: kubernetes
 
         zitadel:
@@ -761,15 +630,13 @@ governance:
           # A deviating fork: upstream builds the images via an nx task graph into external
           # artifacts (its Dockerfiles only COPY prebuilt output); ours build from source, and the
           # monorepo ships TWO images — the backend (apps/api) and the login-v2 app (apps/login).
-          # builds + publish are restated in full because a repo config: replaces the key, not
-          # merges. Carries the login-v2 project-private-labeling fix (upstream #10692).
+          # Carries the login-v2 project-private-labeling fix (upstream #10692).
           config:
             secrets:
               providers:
                 openbao: { kind: vault }
             signing: { preset: "preset/signing.yml" }
             builds:
-              preset: "preset/build-docker.yml"
               # Override the preset's single 'image' build (the id the uniform stencils reference)
               # with our backend Dockerfile; repo-root context by default. StageFreight auto-injects
               # VERSION/COMMIT/BUILD_DATE (the Dockerfile declares those ARGs); zitadel's cmd/build
@@ -783,63 +650,9 @@ governance:
                 dockerfile: apps/login/Dockerfile
                 platforms: [linux/amd64]
             publish:
-              # Full restatement of preset/publish-docker.yml (config: key-replaces the section and
-              # we add a second image) PLUS the login image. Every kind:release target keeps
-              # repos: [primary] — github-mirror receives releases via sync, never a release target.
-              stable:
-                kind: registry
-                registry: [dockerhub, ghcr, harbor]
-                build: image
-                tags: ["v{version}", "latest"]
-                when: { git_tags: [stable], events: [tag] }
-                signing_profile: release
-              prerelease:
-                kind: registry
-                registry: [dockerhub, ghcr, harbor]
-                build: image
-                tags: ["v{version}"]
-                when: { git_tags: [prerelease], events: [tag] }
-                signing_profile: release
-              dev:
-                kind: registry
-                registry: [dockerhub, ghcr, harbor]
-                build: image
-                tags: ["dev-{sha:8}", "latest-dev"]
-                when: { branches: [main], events: [push] }
-                retention: { keep_last: 2 }
-              project-metadata:
-                kind: metadata
-                registry: [dockerhub, harbor]
-                repos: [primary, github-mirror]
-                readme: README.md
-                when: { branches: [main], events: [push, tag] }
-              release:
-                kind: release
-                security_summary: true
-                registry_links: true
-                type: latest
-                repos: [primary]
-                aliases: ["v{version}", "latest"]
-                when: { git_tags: [stable], events: [tag] }
-              prerelease-release:
-                kind: release
-                security_summary: true
-                registry_links: true
-                type: prerelease
-                repos: [primary]
-                when: { git_tags: [prerelease], events: [tag] }
-              dev-release:
-                kind: release
-                security_summary: true
-                registry_links: true
-                type: prerelease
-                repos: [primary]
-                tag: "dev-{sha:8}"
-                aliases: ["latest-dev"]
-                when: { branches: [main], events: [push] }
-                retention: { keep_last: 2 }
-              # ── second image: login → zitadel-login. path overrides the whole {org}/{repo},
-              # split by org alias (hlhd on docker+harbor, homelabhd on ghcr) across the channels. ──
+              # The preset's targets, release-signed, PLUS the login image.
+              stable: { signing_profile: release }
+              prerelease: { signing_profile: release }
               login-reg-stable:
                 kind: registry
                 registry: [dockerhub, harbor]
@@ -899,18 +712,15 @@ governance:
             # {path.<registry>} resolves the repo's one path per surface, so the login image's
             # row names its package explicitly.
             stencils:
-              presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"]
               login-ghcr:   { render: shield, label: GHCR, message: "{org.ghcr}/zitadel-login", color: "#181717", logo: github, logo_color: white, link: "https://github.com/{path.github}/pkgs/container/zitadel-login" }
               login-docker: { render: shield, label: Docker, message: "{org.docker}/zitadel-login", color: "#2496ED", logo: docker, logo_color: white, link: "https://hub.docker.com/r/{org.docker}/zitadel-login" }
               login-pulls:  { render: shield, label: pulls, shield: "docker/pulls/{org.docker}/zitadel-login?color=1d63ed&logo=docker&logoColor=white", link: "https://hub.docker.com/r/{org.docker}/zitadel-login" }
               login-harbor: { render: shield, label: Harbor, message: "{org.docker}/zitadel-login", color: "#60b932", link: "https://cr.optcp.com/harbor/projects" }
             scribe:
-              preset: "preset/scribe-docker.yml"
               files:
                 readme.image-login: { file: "README.md", between: ["<!-- sf:image-login:start -->", "<!-- sf:image-login:end -->"], items: [login-ghcr, login-docker, login-pulls, login-harbor] }
             lint:
-              preset: "preset/lint-generic.yml"
-              # exclude replaces the preset's list (sibling key-replace), so the binary
+              # exclude replaces the preset's list, so the binary
               # types are restated. Beyond those: generated/vendored trees, plus the
               # upstream test/fixture/i18n trees this fork builds from but does not ship —
               # their test-fixture keys and proto doc-comment JWT examples trip the secrets
@@ -929,7 +739,6 @@ governance:
             # modules into a divergent C′. Upstream dep fixes arrive on rebase. The residual-vuln
             # gate stays inert (security has no fail_on), so dry-run evaluation does not block.
             dependency:
-              preset: "preset/dependency.yml"
               remediate: false
             upstream:
               preset: "preset/upstream-rebase.yml"
@@ -937,11 +746,7 @@ governance:
                 zitadel:
                   git: https://github.com/zitadel/zitadel
                   tags: '^v(?P<version>\d+\.\d+\.\d+)$'
-              version:
-                track: zitadel
-                since: v4.19.4
-              sync:
-                from: zitadel
+              version: { track: zitadel }
             repos:
               github-mirror:
                 sync: { preset: "preset/sync-mirror-force.yml" }
@@ -950,7 +755,7 @@ governance:
             - "Identity and access management — an OIDC/OAuth2/SAML provider and user-management platform."
             - "Fork of Zitadel carrying the login-v2 project-private-labeling fix (upstream #10692); the backend and login-v2 images are built from source and published from this repo."
           topics: [zitadel, identity, oidc, oauth2, saml, iam, sso]
-          license: Apache-2.0
+          license: AGPL-3.0-only
           category: identity
 
     # A SECOND profile rather than more repos in hlhd-docker: a profile is a credential
@@ -1001,7 +806,6 @@ governance:
           topics: [error-pages, self-hosted, themes, docker, web]
           # AGPL-3.0 per the repo's LICENSE — a network-use copyleft, deliberately not
           # the permissive default the other entries carry.
-          license: AGPL-3.0
           category: applications
 
         oh-CI:
@@ -1011,7 +815,7 @@ governance:
             - "CI helper image with the tooling a pipeline expects preinstalled."
             - "Container image bundling the utilities CI jobs reach for, so pipelines stop installing the same tools on every run."
           topics: [ci, docker, tooling]
-          license: MIT
+          license: AGPL-3.0-only
           category: infrastructure
 
         static-site:
@@ -1021,7 +825,6 @@ governance:
             - "Base image for serving a static site from a container."
             - "Minimal container image that serves a static site directory, used as the base for the .com site repos."
           topics: [static-site, nginx, docker]
-          license: MIT
           category: infrastructure
 
     # A THIRD profile, sibling to prplanit-docker and on the same PrPlanIT token: these
@@ -1066,11 +869,6 @@ governance:
           # comes from the preset. This one answers on a second apex as well.
           config:
             publish:
-              # A config: override REPLACES the whole section (key-replace, not a deep
-              # merge), so the preset must be restated here or every registry target and
-              # the pages target's own kind/provider/dir vanish with it. The pages map
-              # then deep-merges, adding only the two per-site facts.
-              preset: "preset/publish-docker-pages.yml"
               pages:
                 project: precisionplanit
                 domain: [precisionplanit.com, prplanit.com]
@@ -1086,7 +884,6 @@ governance:
           at: PrPlanIT/homelabhelpdesk.com
           config:
             publish:
-              preset: "preset/publish-docker-pages.yml"
               pages:
                 project: homelabhelpdesk
                 domain: homelabhelpdesk.com
@@ -1199,7 +996,7 @@ governance:
             - "Generates Kubernetes network and security policies from live cluster state."
             - "Reads what a cluster actually does and emits the network/security policies to match, so policy is derived from observed traffic rather than written by hand."
           topics: [kubernetes, network-policy, security, cilium]
-          license: MIT
+          license: AGPL-3.0-only
           category: infrastructure
 
         HASteward:
@@ -1234,7 +1031,6 @@ governance:
                 outputs:
                   - { type: tree, source: site }
             publish:
-              preset: "preset/publish-docker-binary.yml"
               docs:
                 kind: pages
                 provider: cloudflare
@@ -1304,12 +1100,9 @@ governance:
         dd-ui:
           at: PrPlanIT/dd-ui
           # Deviating: also publishes a per-branch Harbor image so a branch build can be
-          # pulled before merge. A config: override replaces the whole publish section, so
-          # the preset is restated and only the extra target added. (test-go comes from the
-          # profile now, so the old per-repo test override is dropped.)
+          # pulled before merge.
           config:
             publish:
-              preset: "preset/publish-docker.yml"
               harbor-branch-dev:
                 kind: registry
                 registry: [harbor]
@@ -1344,7 +1137,6 @@ governance:
             - "Zitadel Actions v2 target that flattens granted roles into a flat roles token claim."
             - "HTTP target Zitadel calls on preuserinfo/preaccesstoken; returns a de-duplicated flat roles claim the kube-apiserver maps to groups."
           topics: [zitadel, oidc, kubernetes, authentication]
-          license: MIT
           category: infrastructure
 
     # Binary-only: same policy as prplanit-go, minus every registry target. No image is
@@ -1407,14 +1199,12 @@ governance:
           at: PrPlanIT/DisplayWizard
           # Windows-only, and the desktop artifact is an Electron pack rather than a Go
           # binary -- it depends on the Go build and is produced by a node builder in a
-          # wine image. The archive names are the product name, not the slug, so the
-          # publish section is restated with its own naming.
+          # wine image. The archive names are the product name, not the slug.
           config:
             # The AutoHotkey releases (beta_v0.6xx, proto_v0.60x) are their own tag source,
             # rendered as tagged. Until the Go port is GA, GitHub shows only them, on the
             # frozen v0.6.x-autohotkey branch.
             git:
-              preset: "preset/git.yml"
               tags:
                 original: { pattern: "^(beta|proto)_v\\d+\\.\\d+$" }
             repos:
@@ -1443,28 +1233,16 @@ governance:
                 output: ui/desktop/release/*.exe
                 command: "corepack enable && pnpm install --no-frozen-lockfile && pnpm -r build && mkdir -p ui/desktop/bin && cp .stagefreight/dist/windows-amd64/dwiz.exe ui/desktop/bin/dwiz.exe && pnpm -C ui/desktop run pack"
             publish:
-              preset: "preset/publish-binary.yml"
-              binaries-dev:
-                kind: binary-archive
-                build: bin
-                name: "VDisplay-Wizard-latest-dev-{os}-{arch}"
-                format: auto
-                checksums: true
-                when: { branches: [main], events: [push, manual] }
+              binaries-dev: { name: "VDisplay-Wizard-latest-dev-{os}-{arch}" }
               binaries:
-                kind: binary-archive
-                build: bin
                 name: "VDisplay-Wizard-{version}-{os}-{arch}"
-                format: auto
-                checksums: true
-                include: ["README.md", "LICENSE"]
                 when: { git_tags: [stable], events: [tag] }
           title: "Display Wizard"
           description:
             - "Windows desktop app for managing virtual displays."
             - "Desktop utility for creating and arranging virtual displays on Windows, packaged as an Electron app over a Go core."
           topics: [windows, desktop, displays, electron]
-          license: MIT
+          license: AGPL-3.0-only
           category: applications
 
     # SoFMeRight's static marketing sites. Same shape as prplanit-sites -- image plus a
@@ -1506,7 +1284,6 @@ governance:
           at: SoFMeRight/kai-hamilton.com
           config:
             publish:
-              preset: "preset/publish-docker-pages.yml"
               pages:
                 project: kai-hamilton
                 domain: kai-hamilton.com
@@ -1522,7 +1299,6 @@ governance:
           at: SoFMeRight/etherealclique.com
           config:
             publish:
-              preset: "preset/publish-docker-pages.yml"
               pages:
                 project: etherealclique
                 domain: etherealclique.com
@@ -1538,7 +1314,6 @@ governance:
           at: SoFMeRight/enamorafoto.com
           config:
             publish:
-              preset: "preset/publish-docker-pages.yml"
               pages:
                 project: enamorafoto
                 domain: enamorafoto.com
@@ -1554,7 +1329,6 @@ governance:
           at: SoFMeRight/yesimvegan.com
           config:
             publish:
-              preset: "preset/publish-docker-pages.yml"
               pages:
                 project: yesimvegan
                 domain: yesimvegan.com
@@ -1570,7 +1344,6 @@ governance:
           at: SoFMeRight/sofmeright.com
           config:
             publish:
-              preset: "preset/publish-docker-pages.yml"
               pages:
                 project: sofmeright
                 domain: sofmeright.com
@@ -1586,7 +1359,6 @@ governance:
           at: SoFMeRight/astralfocal.com
           config:
             publish:
-              preset: "preset/publish-docker-pages.yml"
               pages:
                 project: astralfocal
                 domain: astralfocal.com
@@ -1635,11 +1407,7 @@ governance:
           # cluster for the inventory region. On a generic runner perform finds no
           # reconcile target and scribe reports no kubeconfig available, both silently.
           config:
-            # The override merge is shallow — a key given here replaces the profile's
-            # entirely — so ci: restates forge and image alongside routing.
             ci:
-              forge: [gitlab]
-              image: docker.cr.optcp.com/prplanit/stagefreight:latest-dev
               routing:
                 perform:
                   labels: [k8s-dungeon-production]
@@ -1719,15 +1487,9 @@ governance:
                   path: ansible/services/wazuh-agent.yaml
                   groups: [k8s_master, k8s_worker]
                   converge: true
-            # stencils restates the profile's presets for the same shallow-merge reason:
-            # the three notification stencils below are dungeon's own (they name its LLM),
+            # The three notification stencils below are dungeon's own (they name its LLM),
             # so they cannot live in a shared preset.
             stencils:
-              presets:
-                - preset/stencils-base.yml
-                - preset/stencils-status.yml
-                - preset/stencils-pipeline.yml
-                - preset/stencils-gitops.yml
               ci-detail:
                 type: text
                 body: |
@@ -1828,14 +1590,12 @@ governance:
         dragonfly:
           at: riff.cc/dragonfly
           # Both of these compile a Rust binary and stage it into the image rather than
-          # recompiling inside it, so builds: is restated per repo. The build KEYS are the
+          # recompiling inside it. The build KEYS are the
           # shared names (image/bin) so the profile's publish preset resolves them; the
           # staged filename stays the product name because the Dockerfile COPYs it.
           config:
             builds:
               image:
-                kind: docker
-                platforms: [linux/amd64]
                 stage:
                   from: bin
                   as: "dragonfly-{arch}"
@@ -1858,8 +1618,6 @@ governance:
           config:
             builds:
               image:
-                kind: docker
-                platforms: [linux/amd64]
                 stage:
                   from: bin
                   as: "jetpack-{arch}"
