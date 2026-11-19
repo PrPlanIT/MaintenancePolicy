@@ -1696,7 +1696,7 @@ governance:
                   - { name: "Remote Access (Hookshot🪝)", tier: app, namespaces: [hookshot] }
                   - { name: "Tools & Utilities (Tingle Tuner🔧)", tier: app, namespaces: [tingle-tuner] }
                   - { name: "Private Apps (Pedestal of Time⚔️)", namespaces: [pedestal-of-time] }
-                  - { name: Platform, tier: platform, namespaces: [kube-system, flux-system, istio-system, cert-manager] }
+                  - { name: Platform, tier: platform, namespaces: [kube-system, optcp-gitops, istio-system, cert-manager] }
                 oidc:
                   audience: stagefreight
             ansible:
