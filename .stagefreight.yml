@@ -1610,6 +1610,9 @@ governance:
         jetpack:
           at: riff.cc/jetpack
           config:
+            # main follows upstream's default branch, not its newest release: upstream lands
+            # its fixes on main long before it tags one.
+            upstream: { sync: { branch: HEAD } }
             builds:
               image:
                 stage:
