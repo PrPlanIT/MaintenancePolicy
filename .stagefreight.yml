@@ -164,12 +164,6 @@ governance:
           at: HomeLabHD/apt-cacher-ng
           config:
             upstream:
-              sources:
-                apt-cacher-ng:
-                  apt: apt-cacher-ng
-                  suite: trixie/main
-                  pins:
-                    - { file: Dockerfile, arg: APT_CACHER_NG_VERSION }
               version: { track: apt-cacher-ng, since: v3.7.5 }
           title: "APT Cacher NG"
           description:
