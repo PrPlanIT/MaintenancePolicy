@@ -114,6 +114,8 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
+        secrets: { providers: { openbao: { kind: vault } } }
+        signing: { preset: "preset/signing.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         schedules: { preset: "preset/schedules-upstream.yml" }
@@ -626,10 +628,6 @@ governance:
           # monorepo ships TWO images — the backend (apps/api) and the login-v2 app (apps/login).
           # Carries the login-v2 project-private-labeling fix (upstream #10692).
           config:
-            secrets:
-              providers:
-                openbao: { kind: vault }
-            signing: { preset: "preset/signing.yml" }
             builds:
               # Override the preset's single 'image' build (the id the uniform stencils reference)
               # with our backend Dockerfile; repo-root context by default. StageFreight auto-injects
@@ -644,9 +642,7 @@ governance:
                 dockerfile: apps/login/Dockerfile
                 platforms: [linux/amd64]
             publish:
-              # The preset's targets, release-signed, PLUS the login image.
-              stable: { signing_profile: release }
-              prerelease: { signing_profile: release }
+              # The preset's targets PLUS the login image.
               login-reg-stable:
                 kind: registry
                 registry: [dockerhub, harbor]
@@ -786,6 +782,8 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
+        secrets: { providers: { openbao: { kind: vault } } }
+        signing: { preset: "preset/signing.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         scribe: { preset: "preset/scribe-docker.yml" }
@@ -849,6 +847,8 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
+        secrets: { providers: { openbao: { kind: vault } } }
+        signing: { preset: "preset/signing.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         # scribe-site, not scribe-docker: a site's image goes to harbor + ghcr only, so
@@ -963,6 +963,8 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
+        secrets: { providers: { openbao: { kind: vault } } }
+        signing: { preset: "preset/signing.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
         test: { preset: "preset/test-go.yml" }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"] }
@@ -1075,6 +1077,8 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
+        secrets: { providers: { openbao: { kind: vault } } }
+        signing: { preset: "preset/signing.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
         test: { preset: "preset/test-go.yml" }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml", "preset/stencils-go.yml"] }
@@ -1157,6 +1161,8 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
+        secrets: { providers: { openbao: { kind: vault } } }
+        signing: { preset: "preset/signing.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml", "preset/toolchains-go.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-go.yml"] }
         scribe: { preset: "preset/scribe-go.yml" }
@@ -1269,6 +1275,8 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
+        secrets: { providers: { openbao: { kind: vault } } }
+        signing: { preset: "preset/signing.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         scribe: { preset: "preset/scribe-site.yml" }
@@ -1570,6 +1578,8 @@ governance:
         manifest: { preset: "preset/manifest.yml" }
         release: { preset: "preset/release.yml" }
         security: { preset: "preset/security.yml" }
+        secrets: { providers: { openbao: { kind: vault } } }
+        signing: { preset: "preset/signing.yml" }
         toolchains: { preset: "preset/toolchains.yml", want: { presets: ["preset/toolchains-scanners.yml"] } }
         stencils: { presets: ["preset/stencils-base.yml", "preset/stencils-status.yml", "preset/stencils-docker.yml"] }
         schedules: { preset: "preset/schedules-upstream.yml" }
