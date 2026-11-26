@@ -1098,8 +1098,11 @@ governance:
         dd-ui:
           at: PrPlanIT/dd-ui
           # Deviating: also publishes a per-branch Harbor image so a branch build can be
-          # pulled before merge.
+          # pulled before merge, and its Go module lives in api/, not the repo root.
           config:
+            test:
+              suites:
+                unit: { from: api }
             publish:
               harbor-branch-dev:
                 kind: registry
