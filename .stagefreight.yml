@@ -628,6 +628,12 @@ governance:
           # monorepo ships TWO images — the backend (apps/api) and the login-v2 app (apps/login).
           # Carries the login-v2 project-private-labeling fix (upstream #10692).
           config:
+            ci:
+              # The whole pipeline stays on the build runner: a from-source build of both images
+              # takes ~50 min with that runner's warm cache, and a cold runner runs past the 1h job limit.
+              routing:
+                default:
+                  labels: [sf-build-internal]
             builds:
               # Override the preset's single 'image' build (the id the uniform stencils reference)
               # with our backend Dockerfile; repo-root context by default. StageFreight auto-injects
